@@ -1,0 +1,1062 @@
+<div class="mediorex-page">
+
+    <!-- ================= TOP BAR ================= -->
+    <header class="topbar">
+
+        <div class="top-search">
+            <span class="material-symbols-outlined">search</span>
+
+            <input type="text" [(ngModel)]="searchText" (input)="applyFilters()"
+                placeholder="Search patients by name, UHID, phone..." />
+        </div>
+
+        <div class="topbar-right">
+
+            <button class="notification-btn">
+                <span class="material-symbols-outlined">
+                    notifications
+                </span>
+
+                <span class="notification-count">3</span>
+            </button>
+
+            <div class="profile">
+
+                <div class="profile-avatar">
+                    {{ avatarInitials }}
+                </div>
+
+                <div class="profile-details">
+                    <strong>{{ displayName }}</strong>
+                    <span>{{ roleName }}</span>
+                </div>
+
+                <span class="material-symbols-outlined">
+                    keyboard_arrow_down
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                <span class="logo-top"></span>
+                <span class="logo-left"></span>
+                <span class="logo-right"></span>
+                <span class="logo-bottom"></span>
+            </div>
+
+            <div>
+                <div class="brand-name">MediOrEx</div>
+
+                <div class="brand-subtitle">
+                    Healthcare for a Better Tomorrow
+                </div>
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <a class="menu-item">
+                <span class="material-symbols-outlined">home</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a class="menu-item">
+                <span class="material-symbols-outlined">
+                    calendar_month
+                </span>
+                <span>Appointments</span>
+            </a>
+
+            <a class="menu-item">
+                <span class="material-symbols-outlined">
+                    groups
+                </span>
+                <span>Patients</span>
+            </a>
+
+            <a class="menu-item">
+                <span class="material-symbols-outlined">
+                    medical_services
+                </span>
+                <span>Consultation</span>
+            </a>
+
+
+            <!-- BILLING -->
+            <div class="menu-group">
+
+                <div class="menu-item billing-parent active">
+
+                    <span class="material-symbols-outlined">
+                        receipt_long
+                    </span>
+
+                    <span>Billing</span>
+
+                    <span class="material-symbols-outlined menu-arrow">
+                        keyboard_arrow_down
+                    </span>
+
+                </div>
+
+
+                <div class="submenu">
+
+                    <a class="submenu-item">
+                        Generate Bill
+                    </a>
+
+                    <a class="submenu-item active">
+                        View Bills
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="menu-item">
+
+                <span class="material-symbols-outlined">
+                    payments
+                </span>
+
+                <span>Payments</span>
+
+                <span class="material-symbols-outlined menu-arrow">
+                    keyboard_arrow_down
+                </span>
+
+            </div>
+
+
+            <div class="menu-item">
+
+                <span class="material-symbols-outlined">
+                    bar_chart
+                </span>
+
+                <span>Reports</span>
+
+                <span class="material-symbols-outlined menu-arrow">
+                    keyboard_arrow_down
+                </span>
+
+            </div>
+
+
+            <div class="menu-item">
+
+                <span class="material-symbols-outlined">
+                    tune
+                </span>
+
+                <span>Masters</span>
+
+            </div>
+
+
+            <div class="menu-item">
+
+                <span class="material-symbols-outlined">
+                    settings
+                </span>
+
+                <span>Settings</span>
+
+            </div>
+
+        </nav>
+
+
+        <div class="support-card">
+
+            <span class="material-symbols-outlined">
+                headset_mic
+            </span>
+
+            <div>
+
+                <strong>Need Help?</strong>
+
+                <span>Contact Support</span>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+    <main class="main-content">
+
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+
+            <div class="page-title">
+                <div class="heading-icon">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                </div>
+
+                <div>
+
+                    <h1>View Bills</h1>
+
+                    <p>
+                        Search and view all consultation bills
+                    </p>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <!-- ================= FILTER CARD ================= -->
+        <section class="filter-card">
+
+            <div class="filter-row first-row">
+
+                <!-- SEARCH -->
+                <div class="filter-field search-field">
+
+                    <label>Search</label>
+
+                    <div class="search-filter">
+
+                        <span class="material-symbols-outlined">
+                            search
+                        </span>
+
+                        <input type="text" [(ngModel)]="searchText" (input)="applyFilters()"
+                            placeholder="Search by Bill No, Patient Name, UHID, Doctor..." />
+
+                    </div>
+
+                </div>
+
+
+                <!-- DATE -->
+                <div class="filter-field date-field">
+
+                    <label>Date Range</label>
+
+                    <app-date-range-picker
+                        [startDate]="rangeStart"
+                        [endDate]="rangeEnd"
+                        (dateRangeChange)="onDateRangeChange($event)"
+                    />
+
+                </div>
+
+            </div>
+
+
+            <div class="filter-row second-row">
+
+                <!-- DEPARTMENT -->
+                <div class="filter-field">
+
+                    <label>Department</label>
+
+                    <div class="input-select">
+
+                        <select [(ngModel)]="department">
+
+                            <option>All Departments</option>
+                            <option>General Medicine</option>
+                            <option>Cardiology</option>
+                            <option>Dermatology</option>
+                            <option>Orthopedics</option>
+                            <option>Pediatrics</option>
+
+                        </select>
+
+                        <span class="material-symbols-outlined">
+                            keyboard_arrow_down
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DOCTOR -->
+                <div class="filter-field">
+
+                    <label>Doctor</label>
+
+                    <div class="input-select">
+
+                        <select [(ngModel)]="doctor">
+
+                            <option>All Doctors</option>
+                            <option>Dr. Priya Sharma</option>
+                            <option>Dr. Arun Kumar</option>
+                            <option>Dr. Meena Devi</option>
+                            <option>Dr. Vivek Singh</option>
+
+                        </select>
+
+                        <span class="material-symbols-outlined">
+                            keyboard_arrow_down
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PAYMENT -->
+                <div class="filter-field">
+
+                    <label>Payment Mode</label>
+
+                    <div class="input-select">
+
+                        <select [(ngModel)]="paymentMode">
+
+                            <option>All Payment Modes</option>
+                            <option>Cash</option>
+                            <option>UPI</option>
+                            <option>Card</option>
+                            <option>Wallet</option>
+                            <option>Insurance</option>
+
+                        </select>
+
+                        <span class="material-symbols-outlined">
+                            keyboard_arrow_down
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div class="filter-field">
+
+                    <label>Status</label>
+
+                    <div class="input-select">
+
+                        <select [(ngModel)]="status">
+
+                            <option>All Status</option>
+                            <option>Paid</option>
+                            <option>Pending</option>
+                            <option>Cancelled</option>
+
+                        </select>
+
+                        <span class="material-symbols-outlined">
+                            keyboard_arrow_down
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button class="search-btn" (click)="applyFilters()">
+
+                    <span class="material-symbols-outlined">
+                        search
+                    </span>
+
+                    Search
+
+                </button>
+
+
+                <button class="reset-btn" (click)="resetFilters()">
+                    Reset
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SUMMARY CARDS ================= -->
+        <section class="summary-cards">
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon blue">
+                    <span class="material-symbols-outlined">
+                        receipt_long
+                    </span>
+                </div>
+
+                <div>
+
+                    <span class="summary-label">
+                        Total Bills
+                    </span>
+
+                    <strong>
+                        {{ totalBills }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon green">
+                    <span class="material-symbols-outlined">
+                        currency_rupee
+                    </span>
+                </div>
+
+                <div>
+
+                    <span class="summary-label">
+                        Total Revenue
+                    </span>
+
+                    <strong>
+                        ₹ {{ totalRevenue | number:'1.0-0' }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon green">
+                    <span class="material-symbols-outlined">
+                        check_circle
+                    </span>
+                </div>
+
+                <div>
+
+                    <span class="summary-label">
+                        Total Paid Bills
+                    </span>
+
+                    <strong>
+                        {{ paidBills }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon red">
+                    <span class="material-symbols-outlined">
+                        cancel
+                    </span>
+                </div>
+
+                <div>
+
+                    <span class="summary-label">
+                        Cancelled Bills
+                    </span>
+
+                    <strong>
+                        {{ cancelledBills }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ================= BILL LIST ================= -->
+        <section class="bill-list-card">
+
+            <div class="list-header">
+
+                <h2>
+                    Bills List ({{ totalBills }})
+                </h2>
+
+
+                <div class="list-actions">
+
+                    <select [(ngModel)]="pageSize">
+
+                        <option [ngValue]="10">
+                            10 per page
+                        </option>
+
+                        <option [ngValue]="25">
+                            25 per page
+                        </option>
+
+                        <option [ngValue]="50">
+                            50 per page
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- TABLE -->
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+                            <th>Bill No.</th>
+                            <th>Date & Time</th>
+                            <th>Patient Name</th>
+                            <th>UHID</th>
+                            <th>Department</th>
+                            <th>Doctor</th>
+                            <th>Amount (₹)</th>
+                            <th>Payment Mode</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr *ngIf="isLoading">
+
+                            <td colspan="11" class="empty-row">
+                                Loading bills...
+                            </td>
+
+                        </tr>
+
+                        <tr *ngFor="
+                let bill of filteredBills;
+                let i = index
+              ">
+
+                            <td>
+                                {{ i + 1 }}
+                            </td>
+
+
+                            <td class="bill-number">
+                                {{ bill.billNo }}
+                            </td>
+
+
+                            <td>
+
+                                <div class="date-time">
+
+                                    <strong>
+                                        {{ bill.date }}
+                                    </strong>
+
+                                    <span>
+                                        {{ bill.time }}
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                {{ bill.patientName }}
+                            </td>
+
+
+                            <td>
+                                {{ bill.uhid }}
+                            </td>
+
+
+                            <td>
+                                {{ bill.department }}
+                            </td>
+
+
+                            <td>
+                                {{ bill.doctor }}
+                            </td>
+
+
+                            <td class="amount">
+                                {{ bill.amount | number:'1.2-2' }}
+                            </td>
+
+
+                            <td>
+                                {{ bill.paymentMode }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="status" [ngClass]="{
+                    'paid': bill.status === 'Paid',
+                    'pending': bill.status === 'Pending',
+                    'cancelled': bill.status === 'Cancelled'
+                  }">
+                                    {{ bill.status }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button title="View" (click)="viewBill(bill)">
+
+                                        <span class="material-symbols-outlined">
+                                            visibility
+                                        </span>
+
+                                    </button>
+
+
+                                    <button title="Print" (click)="printBill(bill)">
+
+                                        <span class="material-symbols-outlined">
+                                            print
+                                        </span>
+
+                                    </button>
+
+
+                                    <button title="More" (click)="toggleMenu(i)">
+                                        <span class="material-symbols-outlined">
+                                            more_vert
+                                        </span>
+                                    </button>
+
+                                    <div class="action-dropdown" *ngIf="openMenuIndex === i">
+                                        <button type="button" (click)="askCancelBill(bill)"
+                                            [disabled]="!canCancelBill(bill)">
+                                            Cancel Bill
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        <tr *ngIf="!isLoading && filteredBills.length === 0">
+
+                            <td colspan="11" class="empty-row">
+                                {{ loadError || 'No bills found. Try changing your search or filters.' }}
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- PAGINATION -->
+            <div class="pagination">
+
+                <span>
+                    Showing 1 to {{ filteredBills.length }}
+                    of {{ totalBills }} bills
+                </span>
+
+
+                <div class="pages">
+
+                    <button>
+                        <span class="material-symbols-outlined">
+                            chevron_left
+                        </span>
+                    </button>
+
+                    <button class="current">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button>5</button>
+
+                    <span>...</span>
+
+                    <button>25</button>
+
+                    <button>
+                        <span class="material-symbols-outlined">
+                            chevron_right
+                        </span>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================================================= -->
+    <!-- BILL DETAILS DRAWER -->
+    <!-- ================================================= -->
+
+    <div class="drawer-overlay" *ngIf="showBillDetails" (click)="closeBillDetails()"></div>
+
+
+    <aside class="bill-drawer" [class.open]="showBillDetails">
+
+        <div class="drawer-header">
+
+            <h2>Bill Details</h2>
+
+            <button (click)="closeBillDetails()" class="close-btn">
+
+                <span class="material-symbols-outlined">
+                    close
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <!-- TABS -->
+        <div class="drawer-tabs">
+
+            <button class="active">
+                Bill Preview
+            </button>
+
+        </div>
+
+
+        <!-- ================= INVOICE ================= -->
+        <div class="invoice" *ngIf="selectedBill">
+
+            <!-- INVOICE HEADER -->
+            <div class="invoice-header">
+
+                <div class="invoice-brand">
+
+                    <img src="assets/mediorex_logo.png" alt="MediOrex" class="invoice-logo-image" />
+
+                    <div>
+
+                        <h3>MediOrex</h3>
+
+                        <small>
+                            Healthcare for a Better Tomorrow
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="clinic-details">
+
+                    <strong>
+                        MediOrex Multi-Specialty
+                    </strong>
+
+                    <span>
+                        123, Health Avenue, Anna Nagar
+                    </span>
+
+                    <span>
+                        Chennai - 600040
+                    </span>
+
+                    <span>
+                        Phone: +91 44 4567 8900
+                    </span>
+
+                    <span>
+                        Email: care&#64;mediorex.in
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="invoice-line"></div>
+
+
+            <h2 class="invoice-title">
+                Consultation Bill
+                <span class="cancelled-stamp" *ngIf="selectedBill.status === 'Cancelled'">
+                    Cancelled
+                </span>
+            </h2>
+
+
+            <!-- BILL META -->
+            <div class="invoice-meta plain">
+
+                <div class="meta-left">
+
+                    <div>
+                        <span>Bill No.</span>
+                        <strong>{{ selectedBill.billNo }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Bill Date</span>
+                        <strong>
+                            {{ selectedBill.date }}
+                            {{ selectedBill.time }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Patient ID</span>
+                        <strong>{{ selectedBill.uhid }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Token No.</span>
+                        <strong>{{ selectedBill.tokenNo }}</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="meta-right">
+
+                    <div>
+                        <span>Patient Name</span>
+                        <strong>{{ selectedBill.patientName }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Mobile Number</span>
+                        <strong>{{ selectedBill.phone }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Age / Gender</span>
+                        <strong>
+                            {{ selectedBill.age }} / {{ selectedBill.gender }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONSULTATION -->
+            <div class="invoice-section">
+
+                <h3>Consultation Details</h3>
+
+                <div class="invoice-info">
+
+                    <div>
+                        <span>Doctor</span>
+                        <strong>
+                            : {{ selectedBill.doctor }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Department</span>
+                        <strong>
+                            : {{ selectedBill.department }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Consultation Type</span>
+                        <strong>
+                            : {{ selectedBill.consultationType }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ITEMS -->
+            <div class="invoice-items">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+                            <th>Service Name</th>
+                            <th>Description</th>
+                            <th>Amount (₹)</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr *ngFor="
+                let item of selectedBill.items;
+                let i = index
+              ">
+
+                            <td>{{ i + 1 }}</td>
+
+                            <td>
+                                {{ item.name }}
+                            </td>
+
+                            <td>
+                                {{ item.description }}
+                            </td>
+
+                            <td>
+                                {{ item.amount | number:'1.2-2' }}
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+
+                <div class="invoice-total">
+
+                    <div class="grand-total">
+                        <span>Total Amount</span>
+                        <strong>
+                            ₹ {{ selectedBill.amount | number:'1.2-2' }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="thank-you">
+
+                <strong>
+                    Thank you for choosing MediOrex!
+                </strong>
+
+                <span>
+                    Your Health. Our Priority.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- DRAWER FOOTER -->
+        <div class="drawer-footer">
+
+            <button class="drawer-primary" (click)="printBill(selectedBill)">
+                <span class="material-symbols-outlined">print</span>
+                Print
+            </button>
+
+            <button class="drawer-secondary" (click)="downloadBill(selectedBill)">
+                <span class="material-symbols-outlined">download</span>
+                Download PDF
+            </button>
+
+            <button class="drawer-secondary" (click)="sendToPatient(selectedBill)">
+
+                <span class="material-symbols-outlined">
+                    send
+                </span>
+
+                Send to Patient
+
+            </button>
+
+
+        </div>
+
+    </aside>
+
+
+    <!-- =================================================
+     CANCEL BILL CONFIRM DIALOG
+     ================================================= -->
+
+    <div class="dialog-overlay" *ngIf="confirmCancelItem" (click)="closeCancelConfirm()"></div>
+
+    <div class="cancel-dialog" *ngIf="confirmCancelItem" role="dialog" aria-modal="true"
+        aria-label="Cancel bill confirmation">
+
+        <button type="button" class="dialog-close" (click)="closeCancelConfirm()" aria-label="Close">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <div class="cancel-icon">
+            <span class="material-symbols-outlined">cancel</span>
+        </div>
+
+        <h3>Cancel Bill?</h3>
+
+        <p>
+            Do you want to cancel bill
+            <strong>{{ confirmCancelItem.billNo }}</strong>?
+        </p>
+
+        <div class="cancel-actions">
+            <button type="button" class="cancel-no" (click)="closeCancelConfirm()" [disabled]="isCancelling">
+                No
+            </button>
+
+            <button type="button" class="cancel-yes" (click)="confirmCancelBill()" [disabled]="isCancelling">
+                {{ isCancelling ? 'Cancelling...' : 'Yes, Cancel' }}
+            </button>
+        </div>
+
+    </div>
+
+</div>

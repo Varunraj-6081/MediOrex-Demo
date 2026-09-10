@@ -1,0 +1,80 @@
+<div class="date-picker-wrapper">
+  <button class="date-picker-btn" (click)="toggleDropdown($event)">
+    <svg class="calendar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="2" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1.5"/>
+      <line x1="5" y1="0.5" x2="5" y2="3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="11" y1="0.5" x2="11" y2="3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span class="date-text">{{ displayText }}</span>
+    <svg class="chevron-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  @if (showDropdown) {
+    <div class="dropdown-panel" (click)="onOverlayClick($event)">
+      <div class="preset-list">
+        @for (preset of presets; track preset.value) {
+          <button
+            class="preset-item"
+            [class.active]="selectedPreset === preset.value"
+            (click)="selectPreset(preset)"
+          >
+            {{ preset.label }}
+          </button>
+        }
+      </div>
+
+      <div class="calendar-panel">
+        <div class="calendar-nav">
+          <button class="nav-btn" (click)="prevMonth()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M9 3L5 7L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span class="month-year">{{ calendarMonthName }} {{ calendarYear }}</span>
+          <button class="nav-btn" (click)="nextMonth()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="calendar-grid">
+          @for (d of weekDays; track d) {
+            <span class="weekday-label">{{ d }}</span>
+          }
+        </div>
+
+        <div class="calendar-grid calendar-dates">
+          @for (day of calendarDays; track $index) {
+            @if (day === null) {
+              <span class="empty-cell"></span>
+            } @else {
+              <button
+                class="day-cell"
+                [class.today]="isToday(day)"
+                [class.in-range]="isInRange(day)"
+                [class.range-start]="isRangeStart(day)"
+                [class.range-end]="isRangeEnd(day)"
+                (click)="selectDate(day)"
+                (mouseenter)="onDateHover(day)"
+                (mouseleave)="onDateLeave()"
+              >
+                {{ day.getDate() }}
+              </button>
+            }
+          }
+        </div>
+
+        <div class="calendar-footer">
+          <span class="selected-range-label">
+            {{ displayText }}
+          </span>
+          <button class="apply-btn" (click)="applyDateRange()">Apply</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

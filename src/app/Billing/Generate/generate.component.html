@@ -1,0 +1,734 @@
+<main class="main-content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div class="page-title">
+            <div class="heading-icon">
+                <span class="material-symbols-outlined">receipt_long</span>
+            </div>
+
+            <div>
+            
+            <h1>Generate Bill (Consultation Fee)</h1>
+
+            <p>
+                Create a new bill for patient consultation and additional services
+            </p>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <!-- ================= MAIN GRID ================= -->
+    <div class="billing-layout">
+
+
+        <!-- ================================================= -->
+        <!-- LEFT COLUMN -->
+        <!-- ================================================= -->
+        <div class="left-column">
+
+
+            <!-- ================= PATIENT DETAILS ================= -->
+            <section class="card">
+
+                <h2>Patient Details</h2>
+
+
+                <div class="patient-search">
+
+                    <div class="search-input">
+
+                        <span class="material-symbols-outlined">
+                            search
+                        </span>
+
+                        <input type="text" [(ngModel)]="patientSearch"
+                            (keyup.enter)="searchPatient()"
+                            (focus)="reopenConsult()" (click)="reopenConsult()"
+                            placeholder="Search by mobile number or token number..." />
+
+                        <ul class="search-suggest"
+                            *ngIf="matchedConsultations.length > 1 && consultOpen">
+                            <li *ngFor="let item of matchedConsultations">
+                                <button type="button"
+                                    (mousedown)="onSelectConsultation(consultationKey(item))"
+                                    [class.selected]="consultationKey(item) === selectedConsultationKey">
+                                    {{ getConsultationLabel(item) }}
+                                </button>
+                            </li>
+                        </ul>
+
+                    </div>
+
+
+                    <button class="blue-btn" (click)="searchPatient()" [disabled]="isSearching">
+
+                        <span class="material-symbols-outlined">
+                            search
+                        </span>
+
+                        {{ isSearching ? 'Searching...' : 'Search' }}
+
+                    </button>
+
+
+                </div>
+
+                <small class="field-error" *ngIf="searchError">{{ searchError }}</small>
+
+
+                <!-- PATIENT -->
+                <div class="selected-patient" *ngIf="patient; else noPatient">
+
+                    <div class="patient-avatar">
+
+                        <span class="material-symbols-outlined">
+                            person
+                        </span>
+
+                    </div>
+
+
+                    <div class="patient-details">
+
+                        <h3>{{ patient.name }}</h3>
+
+                        <p>
+                            {{ patient.gender }}
+                            &nbsp; | &nbsp;
+                            {{ patient.age }} Years
+                            &nbsp; | &nbsp;
+                            UHID: {{ patient.uhid }}
+                            &nbsp; | &nbsp;
+                            {{ patient.phone }}
+                        </p>
+
+                    </div>
+
+
+                    <button class="history-btn" (click)="viewHistory()">
+
+                        <span class="material-symbols-outlined">
+                            history
+                        </span>
+
+                        View History
+
+                    </button>
+
+                </div>
+
+                <ng-template #noPatient>
+
+                    <div class="no-patient">
+                        Search by mobile number or token number to select a patient.
+                    </div>
+
+                </ng-template>
+
+            </section>
+
+
+
+            <!-- ================= CONSULTATION ================= -->
+            <section class="card">
+
+                <h2>Consultation Details</h2>
+
+
+                <div class="form-grid three">
+
+
+                    <!-- DATE -->
+                    <div class="form-field">
+
+                        <label>
+                            Visit Date <span>*</span>
+                        </label>
+
+                        <div class="field-icon">
+
+                            <input type="text" [value]="visitDateDisplay" readonly class="readonly" />
+
+                            <span class="material-symbols-outlined">
+                                calendar_month
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DEPARTMENT -->
+                    <div class="form-field">
+
+                        <label>
+                            Department <span>*</span>
+                        </label>
+
+                        <div class="select-field">
+
+                            <select [(ngModel)]="department">
+
+                                <option>General Medicine</option>
+                                <option>Cardiology</option>
+                                <option>Orthopedics</option>
+                                <option>Pediatrics</option>
+                                <option>Dermatology</option>
+
+                            </select>
+
+                            <span class="material-symbols-outlined">
+                                keyboard_arrow_down
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DOCTOR -->
+                    <div class="form-field">
+
+                        <label>
+                            Consultant Doctor <span>*</span>
+                        </label>
+
+                        <div class="select-field">
+
+                            <select [(ngModel)]="selectedDoctorId" (ngModelChange)="onDoctorChange()">
+
+                                <option *ngFor="let doc of doctors" [ngValue]="doc.doctorId">
+                                    {{ doc.name }}{{ doc.qualification ? ' (' + doc.qualification + ')' : '' }}
+                                </option>
+
+                            </select>
+
+                            <span class="material-symbols-outlined">
+                                keyboard_arrow_down
+                            </span>
+
+                        </div>
+
+                        <small class="field-error" *ngIf="doctorsError">{{ doctorsError }}</small>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="form-grid three">
+
+
+                    <!-- CONSULTATION TYPE -->
+                    <div class="form-field">
+
+                        <label>
+                            Consultation Type <span>*</span>
+                        </label>
+
+                        <div class="radio-group">
+
+                            <label>
+
+                                <input type="radio" name="consultation" value="In-Person"
+                                    [(ngModel)]="consultationType" />
+
+                                <span>In-Person</span>
+
+                            </label>
+
+
+                            <label>
+
+                                <input type="radio" name="consultation" value="Online" [(ngModel)]="consultationType" />
+
+                                <span>Online</span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- VISIT TYPE -->
+                    <div class="form-field">
+
+                        <label>
+                            Visit Type <span>*</span>
+                        </label>
+
+                        <div class="select-field">
+
+                            <select [(ngModel)]="visitType">
+
+                                <option>New Visit</option>
+                                <option>Follow-up</option>
+                                <option>Review</option>
+
+                            </select>
+
+                            <span class="material-symbols-outlined">
+                                keyboard_arrow_down
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TOKEN -->
+                    <div class="form-field">
+
+                        <label>
+                            Token / Appointment No.
+                        </label>
+
+                        <div class="token-input">
+
+                            <input type="text" [(ngModel)]="tokenNumber" placeholder="Token number" />
+
+                            <button>
+                                <span class="material-symbols-outlined">
+                                    search
+                                </span>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTES -->
+                <div class="form-field">
+
+                    <label>Notes (Optional)</label>
+
+                    <textarea [(ngModel)]="notes" placeholder="Add any notes about this visit..."></textarea>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ================= BILLING DETAILS ================= -->
+            <section class="card">
+
+                <div class="card-heading">
+
+                    <h2>Billing Details</h2>
+
+                    <button class="add-service" (click)="addService()">
+
+                        <span class="material-symbols-outlined">
+                            add
+                        </span>
+
+                        Add Service
+
+                    </button>
+
+                </div>
+
+
+                <div class="billing-table">
+
+                    <div class="table-header">
+
+                        <span>#</span>
+                        <span>Service Name</span>
+                        <span>Description</span>
+                        <span>Amount (₹)</span>
+                        <span>Action</span>
+
+                    </div>
+
+
+                    <div class="table-row" *ngFor="let item of billItems; let i = index">
+
+                        <span>{{ i + 1 }}</span>
+
+                        <strong>
+                            {{ item.name }}
+                        </strong>
+
+                        <span class="description">
+                            {{ item.description }}
+                        </span>
+
+                        <input type="number" [(ngModel)]="item.amount" (ngModelChange)="calculateTotal()" />
+
+                        <button class="delete-btn" *ngIf="i > 0" (click)="removeService(i)">
+
+                            <span class="material-symbols-outlined">
+                                delete
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ================= PAYMENT ================= -->
+            <section class="card">
+
+                <h2>Payment Details</h2>
+
+
+                <div class="payment-tabs">
+
+                    <button [class.selected]="paymentMode === 'Cash'" (click)="selectPayment('Cash')">
+                        <span class="material-symbols-outlined">
+                            payments
+                        </span>
+                        Cash
+                    </button>
+
+
+                    <button [class.selected]="paymentMode === 'Card'" (click)="selectPayment('Card')">
+                        <span class="material-symbols-outlined">
+                            credit_card
+                        </span>
+                        Card
+                    </button>
+
+
+                    <button [class.selected]="paymentMode === 'UPI'" (click)="selectPayment('UPI')">
+                        <span class="material-symbols-outlined">
+                            qr_code_2
+                        </span>
+                        UPI
+                    </button>
+
+
+                    <button [class.selected]="paymentMode === 'Wallet'" (click)="selectPayment('Wallet')">
+                        <span class="material-symbols-outlined">
+                            account_balance_wallet
+                        </span>
+                        Wallet
+                    </button>
+
+
+                    <button [class.selected]="paymentMode === 'Insurance'" (click)="selectPayment('Insurance')">
+                        <span class="material-symbols-outlined">
+                            verified_user
+                        </span>
+                        Insurance
+                    </button>
+
+                </div>
+
+
+                <div class="form-grid two">
+
+
+                    <div class="form-field">
+
+                        <label>
+                            Amount Received (₹) <span>*</span>
+                        </label>
+
+                        <input type="number" [(ngModel)]="amountReceived" (ngModelChange)="calculateChange()" />
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label>Change (₹)</label>
+
+                        <input type="number" [value]="changeAmount" readonly class="readonly" />
+
+                    </div>
+
+                </div>
+
+
+                <label class="send-bill">
+
+                    <input type="checkbox" [(ngModel)]="sendBill" />
+
+                    <span>
+                        Send bill copy to patient (Email/SMS/WhatsApp)
+                    </span>
+
+                </label>
+
+            </section>
+
+            <div class="bottom-actions">
+                <button class="cancel-btn" (click)="resetForm()">
+                    Cancel
+                </button>
+
+                <button class="generate-btn" (click)="generateBill()" [disabled]="isGenerating">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    {{ isGenerating ? 'Generating...' : 'Generate Bill' }}
+                </button>
+            </div>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- RIGHT COLUMN -->
+        <!-- ================================================= -->
+        <div class="right-column">
+
+
+            <!-- BILL SUMMARY -->
+            <section class="side-card summary-card">
+
+                <h2>Bill Summary</h2>
+
+
+                <div class="summary-line">
+
+                    <span>Subtotal</span>
+
+                    <strong>
+                        ₹ {{ subtotal | number:'1.2-2' }}
+                    </strong>
+
+                </div>
+
+
+                <div class="total-box">
+
+                    <strong>Total Amount</strong>
+
+                    <strong>
+                        ₹ {{ totalAmount | number:'1.2-2' }}
+                    </strong>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- PATIENT SUMMARY -->
+            <section class="side-card patient-summary-card">
+
+                <div class="side-heading">
+
+                    <h2>Patient & Visit Summary</h2>
+
+                    <button>
+                        <span class="material-symbols-outlined">
+                            edit
+                        </span>
+                        Edit
+                    </button>
+
+                </div>
+
+
+                <div class="summary-info">
+
+                    <div>
+                        <span>Patient Name</span>
+                        <strong>: {{ patient?.name || '—' }}</strong>
+                    </div>
+
+                    <div>
+                        <span>UHID</span>
+                        <strong>: {{ patient?.uhid || '—' }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Age / Gender</span>
+                        <strong>
+                            : {{ patient?.age ?? '—' }} Years / {{ patient?.gender || '—' }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Phone</span>
+                        <strong>: {{ patient?.phone || '—' }}</strong>
+                    </div>
+
+
+                    <hr />
+
+
+                    <div>
+                        <span>Visit Date</span>
+                        <strong>: {{ visitDateDisplay }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Department</span>
+                        <strong>: {{ department }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Doctor</span>
+                        <strong>: {{ doctor }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Consultation Type</span>
+                        <strong>: {{ consultationType }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Visit Type</span>
+                        <strong>: {{ visitType }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Token No.</span>
+                        <strong>: {{ tokenNumber }}</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- INFO -->
+            <div class="info-box">
+
+                <span class="material-symbols-outlined">
+                    info
+                </span>
+
+                <p>
+                    A bill will be generated with a unique Bill Number.
+                    You can view, print or share the bill after generation.
+                </p>
+
+            </div>
+
+
+
+            <!-- QUICK ACTIONS -->
+            <section class="side-card quick-card">
+
+                <h2>Quick Actions After Billing</h2>
+
+
+                <div class="quick-actions">
+
+                    <button (click)="printBill()">
+
+                        <span class="material-symbols-outlined">
+                            print
+                        </span>
+
+                        <small>Print Bill</small>
+
+                    </button>
+
+
+                    <button (click)="downloadBill()">
+
+                        <span class="material-symbols-outlined">
+                            download
+                        </span>
+
+                        <small>Download PDF</small>
+
+                    </button>
+
+
+                    <button (click)="sendBillToPatient()">
+
+                        <span class="material-symbols-outlined">
+                            send
+                        </span>
+
+                        <small>Send to Patient</small>
+
+                    </button>
+
+
+                    <button (click)="viewBills()">
+
+                        <span class="material-symbols-outlined">
+                            list_alt
+                        </span>
+
+                        <small>View Bills</small>
+
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+     BILL SUCCESS DIALOG
+     ================================================= -->
+
+    <div class="dialog-overlay" *ngIf="showBillDialog" (click)="closeBillDialog()"></div>
+
+    <div class="bill-dialog" *ngIf="showBillDialog" role="dialog" aria-modal="true"
+        aria-label="Bill generation success">
+
+        <button type="button" class="dialog-close" (click)="closeBillDialog()" aria-label="Close">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <div class="bill-icon">
+            <span class="material-symbols-outlined">check</span>
+        </div>
+
+        <h3>Bill Generated Successfully</h3>
+
+        <p *ngIf="savedPatientName">Bill for {{ savedPatientName }} has been generated.</p>
+        <p *ngIf="!savedPatientName">Bill has been generated successfully.</p>
+
+        <div class="bill-id-box">
+            <span>Bill Number</span>
+            <strong>{{ savedBillNumber }}</strong>
+        </div>
+
+        <div class="bill-dialog-actions">
+            <button type="button" (click)="dialogPrintBill()">
+                <span class="material-symbols-outlined">print</span>
+                <small>Print</small>
+            </button>
+
+            <button type="button" (click)="dialogDownloadBill()">
+                <span class="material-symbols-outlined">download</span>
+                <small>Download</small>
+            </button>
+
+            <button type="button" (click)="dialogSendBill()">
+                <span class="material-symbols-outlined">send</span>
+                <small>Send</small>
+            </button>
+        </div>
+
+        <button type="button" class="bill-done" (click)="closeBillDialog()">
+            Done
+        </button>
+
+    </div>
+
+
+</main>

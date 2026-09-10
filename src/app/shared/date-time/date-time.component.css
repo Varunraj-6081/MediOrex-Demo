@@ -1,0 +1,31 @@
+:host {
+    display: block;
+    margin-left: auto;
+}
+
+.date-time {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #304b78;
+    font-size: 14px;
+}
+
+.date-time .material-icons {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.date-divider {
+    color: #9aabc2;
+}
+
+@media (max-width: 800px) {
+    :host {
+        display: none;
+    }
+
+    .date-time {
+        display: none;
+    }
+}

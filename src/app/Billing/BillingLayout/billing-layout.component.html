@@ -1,0 +1,32 @@
+<div class="app-shell">
+    <app-sidebar></app-sidebar>
+
+    <main class="main-content">
+        <app-toolbar></app-toolbar>
+
+        <section class="page-container">
+            <div class="breadcrumb">
+                <span>Home</span>
+                <span class="breadcrumb-arrow">›</span>
+                <span>Billing</span>
+                <span class="breadcrumb-arrow">›</span>
+                <span class="breadcrumb-current">{{ childTitle }}</span>
+
+                <app-date-time></app-date-time>
+            </div>
+
+            <div class="tabs">
+                <a class="tab" routerLink="/billing/generate" routerLinkActive="active">
+                    <i class="material-icons">receipt_long</i>
+                    Generate Bill
+                </a>
+                <a class="tab" routerLink="/billing/view" routerLinkActive="active">
+                    <i class="material-icons">list_alt</i>
+                    View Bills
+                </a>
+            </div>
+
+            <router-outlet></router-outlet>
+        </section>
+    </main>
+</div>

@@ -1,0 +1,617 @@
+<!-- =================================================
+           PAGE TITLE
+           ================================================= -->
+<div class="page-title-row">
+
+    <div class="page-heading">
+
+        <div class="heading-icon">
+            <i class="material-icons">event_note</i>
+        </div>
+
+        <div>
+            <h1>Booking &amp; Appointment </h1>
+
+            <p>
+                Manage online and offline bookings, register patients,
+                confirm appointments and generate tokens.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="title-actions">
+
+        <button class="secondary-button">
+            <i class="material-icons">storefront</i>
+            Offline / Walk-in
+        </button>
+
+        <button class="primary-button" (click)="newAppointment()">
+            <i class="material-icons">add</i>
+            New Appointment
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =================================================
+           MAIN GRID
+           ================================================= -->
+<div class="content-grid">
+
+
+    <!-- =================================================
+             LEFT : BOOK APPOINTMENT
+             ================================================= -->
+    <section class="booking-card">
+
+        <div class="booking-header">
+
+            <div>
+                <h2>Book Appointment</h2>
+
+                <p>
+                    Fill in patient details and select department,
+                    doctor, date and time.
+                </p>
+            </div>
+
+
+            <!-- Online / Offline -->
+            <div class="booking-type">
+
+                <button class="booking-type-btn" [class.active]="bookingMode === 'online'" disabled
+                    aria-disabled="true">
+                    <i class="material-icons">language</i> Online Booking
+                </button>
+
+                <button class="booking-type-btn" [class.active]="bookingMode === 'offline'"
+                    (click)="bookingMode = 'offline'">
+                    <i class="material-icons">storefront</i> Offline / Walk-in
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+               PATIENT DETAILS
+               ================================================= -->
+        <div class="form-section">
+
+            <div class="section-header">
+
+                <div class="section-title">
+                    <i class="material-icons section-icon">person</i>
+                    <span>Patient Details</span>
+                </div>
+
+                <div class="patient-switch">
+
+                    <button [class.active]="patientType === 'existing'" (click)="selectPatientType('existing')">
+                        Existing Patient
+                    </button>
+
+                    <button [class.active]="patientType === 'new'" (click)="selectPatientType('new')">
+                        New Patient
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two-columns">
+
+                <!-- Mobile -->
+                <div class="field">
+
+                    <label>
+                        Mobile Number <span>*</span>
+                    </label>
+
+                    <div class="search-input-wrap">
+                        <input type="tel" inputmode="numeric" maxlength="10" [(ngModel)]="patient.mobile"
+                            (input)="onMobileInput($event)" (blur)="onMobileBlur()"
+                            (keyup.enter)="onMobileBlur()" (focus)="reopenCombo()" (click)="reopenCombo()"
+                            placeholder="+91 XXXXX XXXXX" />
+
+                        <ul class="search-suggest" *ngIf="patientType === 'existing' && comboOpen && matchedPatients.length > 1">
+                            <li *ngFor="let p of matchedPatients">
+                                <button type="button" (mousedown)="onSelectMatchedPatient(p.patientRegistrationId || '')"
+                                    [class.selected]="(p.patientRegistrationId || '') === selectedMatchedId">
+                                    {{ getMatchedLabel(p) }}
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <small class="field-hint" *ngIf="patientType === 'existing' && isSearching">
+                        Searching...
+                    </small>
+                    <span class="field-error" *ngIf="patientType === 'existing' && lookupError">{{ lookupError }}</span>
+
+                </div>
+
+
+                <!-- Full Name -->
+                <div class="field">
+
+                    <label>
+                        Full Name <span>*</span>
+                    </label>
+
+                    <input type="text" [(ngModel)]="patient.name" placeholder="Enter patient name" />
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid email-row">
+
+                <!-- Age -->
+                <div class="field age-field">
+
+                    <label>
+                        Age <span>*</span>
+                    </label>
+
+                    <input type="number" [(ngModel)]="patient.age" placeholder="Age" />
+
+                </div>
+
+
+                <!-- Sex -->
+                <div class="field sex-field">
+
+                    <label>
+                        Sex <span>*</span>
+                    </label>
+
+                    <div class="radio-group">
+
+                        <label class="radio">
+                            <input type="radio" name="sex" value="Male" [(ngModel)]="patient.sex" />
+                            <span></span>
+                            Male
+                        </label>
+
+                        <label class="radio">
+                            <input type="radio" name="sex" value="Female" [(ngModel)]="patient.sex" />
+                            <span></span>
+                            Female
+                        </label>
+
+                        <label class="radio">
+                            <input type="radio" name="sex" value="Other" [(ngModel)]="patient.sex" />
+                            <span></span>
+                            Other
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Address -->
+            <div class="field">
+
+                <label>Address</label>
+
+                <textarea rows="2" [(ngModel)]="patient.address" placeholder="Enter patient address"></textarea>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+               APPOINTMENT DETAILS
+               ================================================= -->
+        <div class="form-section appointment-section" *ngIf="bookingMode === 'online'">
+
+            <div class="section-header">
+
+                <div class="section-title">
+                    <i class="material-icons section-icon">event</i>
+                    <span>Appointment Details</span>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid appointment-grid">
+
+                <!-- Department -->
+                <div class="field">
+
+                    <label>
+                        Department
+                    </label>
+
+                    <select [(ngModel)]="appointment.departmentId" (ngModelChange)="onDepartmentChange()">
+
+                        <option [ngValue]="null">
+                            Select Department
+                        </option>
+
+                        <option *ngFor="let dept of departments" [ngValue]="dept.departmentId">
+                            {{ dept.departmentName }}
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Doctor -->
+                <div class="field">
+
+                    <label>
+                        Doctor
+                    </label>
+
+                    <select [(ngModel)]="appointment.doctorId">
+
+                        <option [ngValue]="null">
+                            Select Doctor
+                        </option>
+
+                        <option *ngFor="let doc of doctors" [ngValue]="doc.doctorId">
+                            {{ doc.name }}{{ doc.qualification ? ' (' + doc.qualification + ')' : '' }}
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Date -->
+                <div class="field">
+
+                    <label>
+                        Appointment Date
+                    </label>
+
+                    <input type="date" [(ngModel)]="appointment.date" />
+
+                </div>
+
+
+                <!-- Time -->
+                <div class="field">
+
+                    <label>
+                        Time Slot
+                    </label>
+
+                    <select [(ngModel)]="appointment.time">
+
+                        <option value="">
+                            Select Time
+                        </option>
+
+                        <option>09:30 AM</option>
+                        <option>10:00 AM</option>
+                        <option>10:30 AM</option>
+                        <option>11:00 AM</option>
+                        <option>11:30 AM</option>
+                        <option>12:00 PM</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="bottom-form-grid">
+
+                <!-- Consultation Type -->
+                <div class="field">
+
+                    <label>Consultation Type</label>
+
+                    <div class="consultation-options">
+
+                        <label class="radio">
+
+                            <input type="radio" name="consultation" value="In-Person"
+                                [(ngModel)]="appointment.consultationType" />
+
+                            <span></span>
+
+                            In-Person (OPD)
+
+                        </label>
+
+                        <label class="radio">
+
+                            <input type="radio" name="consultation" value="Video"
+                                [(ngModel)]="appointment.consultationType" />
+
+                            <span></span>
+
+                            Video Consultation
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Remarks -->
+                <div class="field remarks">
+
+                    <label>Remarks (Optional)</label>
+
+                    <textarea rows="2" [(ngModel)]="appointment.remarks"
+                        placeholder="Enter any additional notes..."></textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+               ACTIONS
+               ================================================= -->
+        <div class="booking-message-row" *ngIf="bookError">
+            <span class="book-message error">{{ bookError }}</span>
+        </div>
+
+        <div class="booking-actions">
+
+            <button class="clear-button" (click)="clearForm()">
+                Clear
+            </button>
+
+            <button class="book-button" (click)="bookAppointment()" [disabled]="isBooking">
+                <i class="material-icons">confirmation_number</i>
+                {{ isBooking ? 'Generating...' : 'Token Generate' }}
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+             RIGHT : TODAY'S APPOINTMENTS
+             ================================================= -->
+    <aside class="appointments-card">
+
+        <div class="appointments-header">
+
+            <h2>Today's Appointments</h2>
+
+            <button class="view-all" (click)="viewAll()">
+                View All
+            </button>
+
+        </div>
+
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+
+            <div class="stat-card total">
+                <i class="material-icons stat-icon">event</i>
+
+                <strong>{{ totalCount || '-' }}</strong>
+                <span>Total</span>
+            </div>
+
+            <div class="stat-card confirmed">
+                <i class="material-icons stat-icon">check_circle</i>
+
+                <strong>{{ consultedCount || '-' }}</strong>
+                <span>Consulted</span>
+            </div>
+
+            <div class="stat-card waiting">
+                <i class="material-icons stat-icon">schedule</i>
+
+                <strong>{{ waitingCount || '-' }}</strong>
+                <span>Waiting</span>
+            </div>
+
+            <div class="stat-card cancelled">
+                <i class="material-icons stat-icon">cancel</i>
+
+                <strong>{{ cancelledCount || '-' }}</strong>
+                <span>Cancelled</span>
+            </div>
+
+        </div>
+
+
+        <!-- Appointment Table -->
+        <div class="appointment-table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Token</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr *ngFor="let item of recentAppointments; let i = index">
+
+                        <td class="patient-name">
+                            {{ item.name }}
+                        </td>
+
+                        <td>
+                            {{ item.time }}
+                        </td>
+
+                        <td>
+                            <span class="type-badge" [class.online]="item.type === 'Online'"
+                                [class.walkin]="item.type === 'Walk-in'">
+                                {{ item.type }}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                                {{ item.status }}
+                            </span>
+
+                        </td>
+
+                        <td class="token">
+                            {{ item.token }}
+                        </td>
+
+                        <td class="action-menu">
+                            <button type="button" class="menu-toggle" (click)="toggleMenu(i)"
+                                aria-label="More actions">
+                                <i class="material-icons">more_vert</i>
+                            </button>
+
+                            <div class="action-dropdown" *ngIf="openMenuIndex === i">
+                                <button type="button" (click)="askCancelToken(item)"
+                                    [disabled]="!canCancel(item)">
+                                    <i class="material-icons">cancel</i>
+                                    Cancel Token
+                                </button>
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    <tr *ngIf="appointments.length === 0">
+                        <td colspan="7" style="text-align: center; color: #7c8dad;">
+                            No appointments yet.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- WhatsApp Confirmation -->
+        <div class="whatsapp-card">
+
+            <div class="whatsapp-icon">
+                <i class="material-icons">message</i>
+            </div>
+
+            <div class="whatsapp-content">
+
+                <strong>
+                    Appointment Confirmations
+                </strong>
+
+                <span>
+                    Confirmation messages are sent via WhatsApp.
+                </span>
+
+            </div>
+
+            <button class="configure-button" disabled>
+                <i class="material-icons">settings</i> Configure
+            </button>
+
+        </div>
+
+    </aside>
+
+</div>
+
+
+<!-- =================================================
+     TOKEN SUCCESS DIALOG
+     ================================================= -->
+
+<div class="dialog-overlay" *ngIf="showTokenDialog" (click)="closeTokenDialog()"></div>
+
+<div class="token-dialog" *ngIf="showTokenDialog" role="dialog" aria-modal="true"
+    aria-label="Token generation success">
+
+    <button type="button" class="dialog-close" (click)="closeTokenDialog()" aria-label="Close">
+        <i class="material-icons">close</i>
+    </button>
+
+    <div class="token-icon">
+        <i class="material-icons">confirmation_number</i>
+    </div>
+
+    <h3>Token Generated Successfully</h3>
+
+    <p *ngIf="savedPatientName">Token for {{ savedPatientName }} has been generated.</p>
+    <p *ngIf="!savedPatientName">Token has been generated successfully.</p>
+
+    <div class="token-id-box">
+        <span>Token Number</span>
+        <strong>{{ savedTokenNumber }}</strong>
+    </div>
+
+    <button type="button" class="token-done" (click)="closeTokenDialog()">
+        Done
+    </button>
+
+</div>
+
+
+<!-- =================================================
+     CANCEL TOKEN CONFIRM DIALOG
+     ================================================= -->
+
+<div class="dialog-overlay" *ngIf="confirmCancelItem" (click)="closeCancelConfirm()"></div>
+
+<div class="cancel-dialog" *ngIf="confirmCancelItem" role="dialog" aria-modal="true"
+    aria-label="Cancel token confirmation">
+
+    <button type="button" class="dialog-close" (click)="closeCancelConfirm()" aria-label="Close">
+        <i class="material-icons">close</i>
+    </button>
+
+    <div class="cancel-icon">
+        <i class="material-icons">cancel</i>
+    </div>
+
+    <h3>Cancel Token?</h3>
+
+    <p>
+        Do you want to cancel token
+        <strong>{{ confirmCancelItem.token }}</strong>?
+    </p>
+
+    <div class="cancel-actions">
+        <button type="button" class="cancel-no" (click)="closeCancelConfirm()" [disabled]="isCancelling">
+            No
+        </button>
+
+        <button type="button" class="cancel-yes" (click)="confirmCancelToken()" [disabled]="isCancelling">
+            {{ isCancelling ? 'Cancelling...' : 'Yes, Cancel' }}
+        </button>
+    </div>
+
+</div>

@@ -1,0 +1,49 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  color: #101b55;
+}
+
+.app-shell {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #f5f9fe;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8fbff 0%, #f3f8fd 100%);
+}
+
+.page-container {
+  height: calc(100vh - 70px);
+  padding: 16px 27px 18px;
+  overflow-y: auto;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  height: 28px;
+  color: #415b88;
+  font-size: 14px;
+}
+
+.breadcrumb-arrow {
+  color: #8da0bc;
+  font-size: 22px;
+}
+
+@media (max-width: 800px) {
+  .breadcrumb app-date-time {
+    display: none;
+  }
+}

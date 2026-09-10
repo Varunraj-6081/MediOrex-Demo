@@ -1,0 +1,27 @@
+<div class="app-shell">
+
+    <app-sidebar></app-sidebar>
+
+    <main class="main-content">
+
+        <app-toolbar></app-toolbar>
+
+        <section class="page-container">
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <span>Home</span>
+                <span class="breadcrumb-arrow">›</span>
+                <span>Queue Management</span>
+
+                <app-date-time></app-date-time>
+            </div>
+
+            <!-- Routed content -->
+            <router-outlet></router-outlet>
+
+        </section>
+
+    </main>
+
+</div>

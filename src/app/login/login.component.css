@@ -1,0 +1,804 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  font-family:
+    Inter,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 42% 23% 35%;
+  overflow: hidden;
+  background-image: url("/assets/mediorex_background.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* =========================================
+   LEFT HERO
+========================================= */
+
+.hero-section {
+  position: relative;
+  z-index: 3;
+  min-height: 100vh;
+  padding: 4px 48px 34px 72px;
+
+  background: transparent;
+
+  overflow: hidden;
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  top: -10%;
+  right: -16%;
+  width: 180px;
+  height: 125%;
+  border-radius: 50%;
+  border-left: 12px solid rgba(25, 166, 232, 0.15);
+  border-right: 7px solid rgba(25, 166, 232, 0.08);
+  transform: rotate(11deg);
+  pointer-events: none;
+}
+
+/* =========================================
+   BRAND
+========================================= */
+
+.brand,
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.brand h1 {
+  color: #11165f;
+  font-size: 36px;
+  line-height: 1;
+  margin: 0;
+  font-weight: 750;
+  letter-spacing: -1.5px;
+}
+
+.brand p,
+.login-brand p {
+  margin: 6px 0 0;
+  color: #536198;
+  font-size: 12px;
+}
+
+.login-brand p {
+  transform: translateY(10px);
+}
+
+/* =========================================
+   HERO HEADING
+========================================= */
+
+.hero-heading {
+  margin-top: 70px;
+  position: relative;
+  z-index: 2;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  color: #303c81;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+
+.eyebrow span,
+.bottom-tagline span {
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: #087df1;
+}
+
+.bottom-tagline span {
+  width: 80px;
+}
+
+.hero-heading h2 {
+  margin: 19px 0 12px;
+
+  color: #10165f;
+  font-size: clamp(42px, 3.1vw, 57px);
+  line-height: 1.05;
+  letter-spacing: -2.2px;
+  font-weight: 750;
+}
+
+.hero-heading h2 span {
+  background: linear-gradient(90deg,
+      #147eea,
+      #12b9b3);
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-description {
+  max-width: 560px;
+
+  color: #5c689e;
+  font-size: 18px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* =========================================
+   FEATURES
+========================================= */
+
+.features-grid {
+  margin-top: 26px;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(250px, 1fr));
+  gap: 20px;
+
+  position: relative;
+  z-index: 2;
+}
+
+.feature-card {
+  min-height: 94px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 11px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  border: 1px solid rgba(194, 219, 240, 0.72);
+  border-radius: 13px;
+
+  box-shadow:
+    0 8px 25px rgba(70, 127, 170, 0.06);
+
+  backdrop-filter: blur(8px);
+}
+
+.feature-icon {
+  flex: 0 0 69px;
+  width: 69px;
+  height: 69px;
+
+  border-radius: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-icon svg {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.feature-icon.blue {
+  color: #087ff1;
+  background: #e8f3ff;
+}
+
+.feature-icon.green {
+  color: #04a98e;
+  background: #e7f8f3;
+}
+
+.feature-icon.purple {
+  color: #7139ed;
+  background: #f1eaff;
+}
+
+.feature-icon.orange {
+  color: #ff930e;
+  background: #fff4e3;
+}
+
+.feature-icon.pink {
+  color: #ef3b72;
+  background: #ffebf1;
+}
+
+.feature-icon.teal {
+  color: #03aaa1;
+  background: #e5f8f5;
+}
+
+.feature-icon.violet {
+  color: #6734e8;
+  background: #f0eaff;
+}
+
+.feature-card h3 {
+  margin: 0 0 5px;
+  color: #11165f;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.feature-card p {
+  margin: 0;
+  color: #6170a4;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+/* =========================================
+   TAGLINE
+========================================= */
+
+.bottom-tagline {
+  position: absolute;
+  left: 72px;
+  bottom: 50px;
+  z-index: 3;
+}
+
+.bottom-tagline p {
+  margin: 16px 0 0;
+
+  color: #121861;
+  font-size: 21px;
+  line-height: 1.15;
+  font-weight: 500;
+}
+
+/* =========================================
+   HOSPITAL IMAGE
+========================================= */
+
+.hospital-image {
+  min-height: 100vh;
+
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================
+   LOGIN SECTION
+========================================= */
+
+.login-section {
+  min-height: 100vh;
+
+  position: relative;
+  z-index: 5;
+
+  padding: 40px 36px 50px 0;
+
+  background: transparent;
+}
+
+/* =========================================
+   LOGIN CARD
+========================================= */
+
+.login-card {
+  width: min(100%, 485px);
+  min-height: 620px;
+
+  margin: 0 auto 0 20px;
+
+  padding: 10px 40px 0;
+
+  border-radius: 21px;
+
+  background: rgba(255, 255, 255, 0.93);
+
+  box-shadow:
+    0 10px 50px rgba(65, 104, 145, 0.08);
+
+  position: relative;
+  overflow: hidden;
+}
+
+.login-brand {
+  justify-content: center;
+  gap: 0;
+  transform: translateX(-24px);
+}
+
+.login-brand .brand-logo {
+  width: 100px;
+  height: 100px;
+}
+
+.login-brand h1 {
+  color: #10165f;
+  font-size: 38px;
+  line-height: 1;
+  margin: 0;
+  font-weight: 750;
+  letter-spacing: -1.5px;
+  transform: translateY(10px);
+}
+
+.brand h1 .brand-light,
+.login-brand h1 .brand-light {
+  background: linear-gradient(180deg, #143368, #076594);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand h1 .brand-dark,
+.login-brand h1 .brand-dark {
+  background: linear-gradient(180deg, #3192a3, #299673);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.login-card>h2 {
+  margin: 38px 0 6px;
+
+  text-align: center;
+
+  color: #10165f;
+  font-size: 31px;
+  font-weight: 750;
+  letter-spacing: -1px;
+}
+
+.login-subtitle {
+  margin: 0 0 25px;
+
+  text-align: center;
+
+  color: #6874a7;
+  font-size: 16px;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.form-group {
+  margin-bottom: 21px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+
+  color: #11165f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.input-wrapper {
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+
+  border: 1px solid #d3def0;
+  border-radius: 10px;
+
+  background: #fff;
+
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.input-wrapper:focus-within {
+  border-color: #1683ee;
+
+  box-shadow:
+    0 0 0 3px rgba(22, 131, 238, 0.09);
+}
+
+.input-wrapper.error {
+  border-color: #e5484d;
+
+  box-shadow:
+    0 0 0 3px rgba(229, 72, 77, 0.1);
+}
+
+.input-wrapper.error:focus-within {
+  border-color: #e5484d;
+
+  box-shadow:
+    0 0 0 3px rgba(229, 72, 77, 0.12);
+}
+
+.field-error {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #e5484d;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.login-error {
+  font-size: 14px;
+}
+
+.input-wrapper>svg {
+  width: 23px;
+  height: 23px;
+
+  margin: 0 13px;
+
+  fill: none;
+  stroke: #6471a4;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.input-wrapper input {
+  flex: 1;
+
+  height: 100%;
+
+  border: 0;
+  outline: 0;
+
+  color: #18205f;
+
+  font-size: 14px;
+
+  background: transparent;
+}
+
+.input-wrapper input::placeholder {
+  color: #8b96bc;
+}
+
+.password-toggle {
+  border: 0;
+  background: transparent;
+
+  padding: 0 15px;
+
+  cursor: pointer;
+}
+
+.password-toggle svg {
+  width: 22px;
+  height: 22px;
+
+  fill: none;
+  stroke: #6874a7;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* =========================================
+   OPTIONS
+========================================= */
+
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  margin: 3px 0 25px;
+}
+
+.forgot {
+  border: 0;
+  background: transparent;
+
+  color: #087ff0;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+/* =========================================
+   SIGN IN
+========================================= */
+
+.signin-button {
+  width: 100%;
+  height: 56px;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: linear-gradient(90deg,
+      #0879e9,
+      #0a72dc);
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 18px rgba(8, 121, 233, 0.16);
+
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+}
+
+.signin-button:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 11px 24px rgba(8, 121, 233, 0.23);
+}
+
+.signin-arrow {
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.login-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+
+  margin-top: 20px;
+  padding: 20px 40px 20px;
+  margin-left: -40px;
+  margin-right: -40px;
+
+  background:
+    radial-gradient(ellipse at 20% 100%,
+      rgba(218, 242, 255, 0.75),
+      transparent 50%),
+    radial-gradient(ellipse at 85% 100%,
+      rgba(214, 240, 255, 0.75),
+      transparent 50%);
+}
+
+.hospital-line-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 65%;
+  height: 100px;
+  overflow: hidden;
+}
+
+.hospital-line-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  margin: 0;
+  border-radius: 10px;
+}
+
+.login-footer p {
+  margin: 0;
+
+  text-align: center;
+
+  color: #5d6ca4;
+
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.login-footer .footer-copy {
+  margin-top: 18px;
+
+  color: #8a96bd;
+
+  font-size: 11px;
+  letter-spacing: 0.3px;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1200px) {
+
+  .login-page {
+    grid-template-columns: 50% 50%;
+  }
+
+  .hospital-image {
+    display: none;
+  }
+
+  .hero-section {
+    padding-left: 45px;
+    padding-right: 35px;
+  }
+
+  .login-section {
+    padding: 90px 35px 40px;
+  }
+
+  .hero-heading h2 {
+    font-size: 46px;
+  }
+
+  .features-grid {
+    gap: 14px;
+  }
+
+  .feature-card {
+    min-height: 88px;
+  }
+}
+
+/* =========================================
+   TABLET SMALL
+========================================= */
+
+@media (max-width: 900px) {
+
+  .login-page {
+    display: block;
+    overflow: visible;
+  }
+
+  .hero-section {
+    min-height: auto;
+    padding: 2px 35px 50px;
+  }
+
+  .hero-section::after {
+    display: none;
+  }
+
+  .hero-heading {
+    margin-top: 2px;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bottom-tagline {
+    position: static;
+    margin-top: 40px;
+  }
+
+  .hospital-image {
+    display: block;
+    min-height: 280px;
+  }
+
+  .login-section {
+    min-height: 800px;
+    padding: 55px 30px;
+  }
+
+  .login-card {
+    margin: 0 auto;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .hero-section,
+  .hospital-image {
+    display: none;
+  }
+
+  .login-section {
+    min-height: 100vh;
+    padding: 24px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-card {
+    margin: 0 auto;
+    border-radius: 16px;
+  }
+
+  .login-brand h1 {
+    font-size: 29px;
+  }
+
+  .login-card>h2 {
+    margin-top: 28px;
+    font-size: 27px;
+  }
+
+  .login-subtitle {
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+
+  .login-footer {
+    height: 170px;
+  }
+
+  .login-footer p {
+    font-size: 13px;
+  }
+}
+
+/* =========================================
+   VERY SMALL MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+
+  .hero-heading h2 {
+    font-size: 32px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .login-card {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .login-options {
+    font-size: 12px;
+  }
+
+  .forgot {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,51 @@
+<header class="top-header">
+
+    <button class="menu-button" type="button" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+        <i class="material-icons">menu</i>
+    </button>
+
+    <!-- Search -->
+    <div class="global-search">
+        <i class="material-icons search-icon">search</i>
+
+        <input type="text" placeholder="Search by patient name, mobile number, token, or appointment ID..." />
+    </div>
+
+
+    <!-- Header Right -->
+    <div class="header-right">
+
+        <div class="notification">
+            <i class="material-icons">notifications</i>
+        </div>
+
+        <div class="profile-menu-wrapper">
+
+            <button class="user-profile" type="button" (click)="toggleProfileMenu()"
+                [attr.aria-expanded]="profileMenuOpen" aria-label="Open profile menu">
+
+                <div class="avatar">
+                    <span>{{ avatarInitial }}</span>
+                </div>
+
+                <div class="user-info">
+                    <strong>{{ displayName }}</strong>
+                    <span>{{ roleName }}</span>
+                </div>
+
+                <i class="material-icons profile-arrow">keyboard_arrow_down</i>
+
+            </button>
+
+            <div class="profile-dropdown" *ngIf="profileMenuOpen">
+                <button type="button" class="sign-out-button" (click)="signOut($event)">
+                    <i class="material-icons">logout</i>
+                    Sign out
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</header>

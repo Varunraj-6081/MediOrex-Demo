@@ -1,0 +1,51 @@
+<div class="sidebar-backdrop" *ngIf="sidebarState.mobileOpen()" (click)="sidebarState.closeMobile()"></div>
+
+<aside class="sidebar" [class.collapsed]="sidebarState.collapsed()"
+    [class.mobile-open]="sidebarState.mobileOpen()">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+        <img src="assets/mediorex_logo.png" alt="MediOrEx logo" class="logo-image" />
+
+        <div>
+            <div class="logo-name"><span class="brand-light">Medi</span><span class="brand-dark">Orex</span></div>
+            <div class="logo-tagline">Care Today&nbsp; Healthier Tomorrow</div>
+        </div>
+    </div>
+
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+
+        <div *ngFor="let menu of menuItems">
+
+            <a class="menu-item" [class.active]="menu.active" [routerLink]="menu.route" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }" (click)="selectMenu(menu)">
+                <i class="material-icons nav-icon">{{ menu.icon }}</i>
+                <span class="menu-label">{{ menu.label }}</span>
+                <span class="material-icons menu-arrow" *ngIf="menu.children">{{ menu.expanded ? 'keyboard_arrow_up' :
+                    'keyboard_arrow_down' }}</span>
+            </a>
+
+            <div class="submenu" *ngIf="menu.expanded">
+
+                <a class="submenu-item" *ngFor="let child of menu.children" [class.active]="child.active"
+                    [routerLink]="child.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
+                    <i class="material-icons submenu-icon">{{ child.icon }}</i>
+                    <span>{{ child.label }}</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+        <div>MediOrex v1.0.0</div>
+        <div>© {{ currentYear }} Orextechnologies. All rights reserved</div>
+    </div>
+
+</aside>

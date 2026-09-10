@@ -1,0 +1,48 @@
+<div class="app-shell">
+
+    <app-sidebar></app-sidebar>
+
+    <main class="main-content">
+
+        <app-toolbar></app-toolbar>
+
+        <section class="page-container">
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <span>Home</span>
+                <span class="breadcrumb-arrow">›</span>
+                <span>Patient Management</span>
+                <span class="breadcrumb-arrow">›</span>
+                <span class="breadcrumb-current">{{ childTitle }}</span>
+
+                <app-date-time></app-date-time>
+            </div>
+
+            <!-- =================================================
+           TABS
+           ================================================= -->
+            <div class="tabs">
+
+                <button class="tab" routerLink="/patient/register" routerLinkActive="active">
+                    <i class="material-icons">person_add</i>
+                    Patient Registration
+                </button>
+
+                <button class="tab" routerLink="/patient/view" routerLinkActive="active">
+                    <i class="material-icons">list_alt</i>
+                    View Patients
+                </button>
+
+            </div>
+
+            <!-- =================================================
+           ROUTED CONTENT
+           ================================================= -->
+            <router-outlet></router-outlet>
+
+        </section>
+
+    </main>
+
+</div>

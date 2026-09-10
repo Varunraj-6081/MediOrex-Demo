@@ -1,0 +1,410 @@
+<div class="settings-page">
+  <!-- Main Content -->
+  <div class="users-layout">
+    <!-- LEFT -->
+    <div class="left-content">
+      <!-- User Management -->
+      <section class="card user-management">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="section-icon"><i class="material-icons">group</i></div>
+
+            <div>
+              <h2>User Management</h2>
+              <p>Create, view and manage system users.</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="users-message" *ngIf="loading">Loading users...</p>
+        <p class="users-message error" *ngIf="!loading && loadError">
+          {{ loadError }}
+        </p>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="search-box">
+            <i class="material-icons">search</i>
+
+            <input
+              type="text"
+              placeholder="Search by name, email or role..."
+              [(ngModel)]="searchText"
+            />
+          </div>
+
+          <select [(ngModel)]="selectedRole">
+            <option value="">All Roles</option>
+            <option value="Admin">Admin</option>
+            <option value="Doctor">Doctor</option>
+            <option value="Staff">Staff</option>
+          </select>
+
+          <select [(ngModel)]="selectedStatus">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+
+          <button class="reset-btn" (click)="resetFilters()">Reset</button>
+        </div>
+
+        <!-- User Table -->
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Password</th>
+                <th>Status</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let user of filteredUsers; let i = index">
+                <td>{{ i + 1 }}</td>
+
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar" [style.background]="user.color">
+                      {{ user.initials }}
+                    </div>
+
+                    <div>
+                      <strong>{{ user.name }}</strong>
+                      <small>{{ user.designation }}</small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  {{ user.username }}
+                </td>
+
+                <td>
+                  <span class="role-badge" [ngClass]="user.role.toLowerCase()">
+                    {{ user.role }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="masked-password">********</span>
+                </td>
+
+                <td>
+                  <span
+                    class="status"
+                    [class.active-status]="user.status === 'Active'"
+                    [class.inactive-status]="user.status !== 'Active'"
+                  >
+                    <i></i>
+                    {{ user.status }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="last-login">
+                    {{ user.lastLogin }}
+                  </div>
+                </td>
+
+                <td>
+                  <div class="actions">
+                    <button
+                      *ngIf="!isProtectedUser(user) || isSuperAdmin"
+                      class="edit-action"
+                      (click)="editUser(user)"
+                    >
+                      <i class="material-icons">edit</i>
+                    </button>
+
+                    <button
+                      *ngIf="!isProtectedUser(user)"
+                      class="delete-action"
+                      (click)="deleteUser(user)"
+                    >
+                      <i class="material-icons">delete</i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="table-footer">
+          <span>
+            Showing 1 to {{ filteredUsers.length }} of {{ users.length }} users
+          </span>
+
+          <div class="pagination">
+            <button><i class="material-icons">chevron_left</i></button>
+            <button class="current">1</button>
+            <button><i class="material-icons">chevron_right</i></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- RIGHT : CREATE USER -->
+    <aside class="create-user-card">
+      <div class="create-header">
+        <div class="create-icon"><i class="material-icons">person_add</i></div>
+
+        <div>
+          <h2>{{ editingUserId ? "Edit User" : "Create New User" }}</h2>
+          <p>
+            {{
+              editingUserId
+                ? "Update user details and enter a new password if needed."
+                : "Add a new user to the system."
+            }}
+          </p>
+        </div>
+      </div>
+
+      <div class="users-message error" *ngIf="errorMessage">
+        <i class="material-icons">error</i>
+        {{ errorMessage }}
+      </div>
+
+      <form #userForm="ngForm" (ngSubmit)="createUser()">
+        <!-- First Name -->
+        <div class="form-group">
+          <label>First Name <span class="required-marker">*</span></label>
+
+          <input
+            type="text"
+            name="firstName"
+            [(ngModel)]="newUser.firstName"
+            placeholder="Enter first name"
+            required
+          />
+        </div>
+
+        <!-- Last Name -->
+        <div class="form-group">
+          <label>Last Name <span class="required-marker">*</span></label>
+
+          <input
+            type="text"
+            name="lastName"
+            [(ngModel)]="newUser.lastName"
+            placeholder="Enter last name"
+            required
+          />
+        </div>
+
+        <!-- Mobile -->
+        <div class="form-group">
+          <label>Mobile Number</label>
+
+          <input
+            type="text"
+            name="phone"
+            [(ngModel)]="newUser.phone"
+            placeholder="Enter mobile number"
+            required
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label>Email</label>
+
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="newUser.email"
+            placeholder="Enter email address"
+          />
+        </div>
+
+        <!-- Role -->
+        <div class="form-group">
+          <label>Role <span class="required-marker">*</span></label>
+
+          <select name="role" [(ngModel)]="newUser.role" required>
+            <option value="">Select role</option>
+            <option *ngFor="let role of roles" [value]="role">
+              {{ role }}
+            </option>
+          </select>
+          <small class="field-error" *ngIf="rolesError">{{ rolesError }}</small>
+        </div>
+
+        <!-- Username -->
+        <div class="form-group">
+          <label>Username <span class="required-marker">*</span></label>
+
+          <input
+            type="text"
+            name="username"
+            [(ngModel)]="newUser.username"
+            placeholder="Enter username"
+            required
+          />
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label>
+            Password
+            <span class="required-marker">*</span>
+          </label>
+
+          <div class="password-field">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              [(ngModel)]="newUser.password"
+              placeholder="Enter new password"
+              required
+            />
+
+            <button type="button" (click)="showPassword = !showPassword">
+              <i class="material-icons">{{
+                showPassword ? "visibility" : "visibility_off"
+              }}</i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label>
+            Confirm Password
+            <span class="required-marker">*</span>
+          </label>
+
+          <div class="password-field">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              name="confirmPassword"
+              [(ngModel)]="newUser.confirmPassword"
+              placeholder="Confirm new password"
+              required
+            />
+
+            <button
+              type="button"
+              (click)="showConfirmPassword = !showConfirmPassword"
+            >
+              <i class="material-icons">{{
+                showConfirmPassword ? "visibility" : "visibility_off"
+              }}</i>
+            </button>
+          </div>
+        </div>
+
+        <p class="field-error password-error" *ngIf="passwordsDoNotMatch">
+          Passwords do not match.
+        </p>
+
+        <!-- Active User -->
+        <div class="active-user">
+          <label class="switch">
+            <input type="checkbox" name="active" [(ngModel)]="newUser.active" />
+
+            <span class="slider"></span>
+          </label>
+
+          <div>
+            <strong>Active User</strong>
+            <small>User will be able to login to the system.</small>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="resetForm()">
+            Cancel
+          </button>
+
+          <button type="submit" class="submit-btn" [disabled]="!userForm.valid">
+            <i class="material-icons">person_add</i>
+            {{ editingUserId ? "Update User" : "Create User" }}
+          </button>
+        </div>
+      </form>
+    </aside>
+  </div>
+
+  <div
+    class="dialog-overlay"
+    *ngIf="showDeleteDialog"
+    (click)="cancelDelete()"
+  ></div>
+
+  <div
+    class="confirm-dialog"
+    *ngIf="showDeleteDialog"
+    role="alertdialog"
+    aria-modal="true"
+    aria-label="Confirm user deletion"
+  >
+    <div class="confirm-icon">
+      <i class="material-icons">delete_outline</i>
+    </div>
+
+    <h3>Delete User?</h3>
+    <p>
+      Do you want to delete
+      <strong>{{ userPendingDelete?.name }}</strong
+      >?
+    </p>
+
+    <div class="confirm-actions">
+      <button type="button" class="cancel-btn" (click)="cancelDelete()">
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="delete-confirm-btn"
+        (click)="confirmDelete()"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="dialog-overlay"
+    *ngIf="showSuccessDialog"
+    (click)="closeSuccessDialog()"
+  ></div>
+
+  <div
+    class="success-dialog"
+    *ngIf="showSuccessDialog"
+    role="dialog"
+    aria-modal="true"
+    aria-label="User save success"
+  >
+    <button
+      type="button"
+      class="dialog-close"
+      (click)="closeSuccessDialog()"
+      aria-label="Close"
+    >
+      <i class="material-icons">close</i>
+    </button>
+
+    <div class="success-icon">
+      <i class="material-icons">check</i>
+    </div>
+
+    <h3>{{ successDialogMessage }}</h3>
+    <p>User details have been saved successfully.</p>
+
+    <button type="button" class="success-done" (click)="closeSuccessDialog()">
+      Done
+    </button>
+  </div>
+</div>

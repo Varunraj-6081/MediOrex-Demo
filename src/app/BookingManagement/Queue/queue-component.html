@@ -1,0 +1,534 @@
+<div class="queue-page">
+
+    <!-- ================= PAGE HEADER ================= -->
+
+    <div class="page-header">
+
+        <div class="page-heading">
+
+            <div class="heading-icon">
+                <i class="material-icons">queue</i>
+            </div>
+
+            <div>
+                <h1>Queue Management</h1>
+
+                <p>
+                    Manage live queue, call patients, and track queue status in real-time.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="header-actions">
+
+            <button class="refresh-btn" (click)="loadQueue()" [disabled]="isLoading" title="Refresh queue">
+                <i class="material-icons">refresh</i>
+                Refresh
+            </button>
+
+            <div class="department-select">
+
+                <label>Department</label>
+
+                <select [(ngModel)]="selectedDepartmentId" (change)="changeDepartment()">
+                    <option *ngFor="let dept of departments" [ngValue]="dept.departmentId">
+                        {{ dept.departmentName }}
+                    </option>
+                </select>
+
+            </div>
+
+            <button class="call-next-top" (click)="callNext()">
+                <i class="material-icons">campaign</i>
+                Call Next
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="load-error" *ngIf="loadError">
+        {{ loadError }}
+    </div>
+
+
+    <!-- ================= SUMMARY CARDS ================= -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card waiting-card">
+
+            <div class="summary-icon">
+                <i class="material-icons">groups</i>
+            </div>
+
+            <div>
+                <strong>{{ waitingCount }}</strong>
+
+                <span>Waiting</span>
+
+                <small>In Queue</small>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card completed-card">
+
+            <div class="summary-icon">
+                <i class="material-icons">task_alt</i>
+            </div>
+
+            <div>
+                <strong>{{ completedCount }}</strong>
+
+                <span>Completed</span>
+
+                <small>Today</small>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card noshow-card">
+
+            <div class="summary-icon">
+                <i class="material-icons">person_off</i>
+            </div>
+
+            <div>
+                <strong>{{ noShowCount }}</strong>
+
+                <span>No Show</span>
+
+                <small>Today</small>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card appointments-card">
+
+            <div class="summary-icon">
+                <i class="material-icons">event</i>
+            </div>
+
+            <div>
+                <strong>{{ totalAppointments }}</strong>
+
+                <span>Total Appointments</span>
+
+                <small>Today</small>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+    <!-- ================= MAIN GRID ================= -->
+
+    <div class="queue-grid">
+
+
+        <!-- =================================================
+         LEFT : WAITING QUEUE
+         ================================================= -->
+
+        <section class="waiting-queue-card">
+
+            <div class="queue-title-row">
+
+                <div>
+                    <h2>Waiting Queue</h2>
+                </div>
+
+            </div>
+
+
+            <!-- Queue Filters -->
+
+            <div class="queue-toolbar">
+
+                <div class="queue-tabs">
+
+                    <button [class.active]="queueFilter === 'all'" (click)="setQueueFilter('all')">
+                        All ({{ waitingCount }})
+                    </button>
+
+                    <button [class.active]="queueFilter === 'online'" (click)="setQueueFilter('online')">
+                        Online ({{ onlineCount }})
+                    </button>
+
+                    <button [class.active]="queueFilter === 'walkin'" (click)="setQueueFilter('walkin')">
+                        Walk-in ({{ walkinCount }})
+                    </button>
+
+                </div>
+
+
+                <div class="queue-search">
+
+                    <i class="material-icons">search</i>
+
+                    <input type="text" [(ngModel)]="searchText" (input)="applyFilters()"
+                        placeholder="Search patient name or token..." />
+
+                </div>
+
+            </div>
+
+
+            <!-- Queue Table -->
+
+            <div class="queue-table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>Token</th>
+
+                            <th>Patient Name</th>
+
+                            <th>Age / Sex</th>
+
+                            <th>Type</th>
+
+                            <th>Appointment Time</th>
+
+                            <th>Status</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr *ngFor="
+                let patient of filteredQueue;
+                let i = index
+              ">
+
+                            <td>
+                                {{ i + 1 }}
+                            </td>
+
+
+                            <td class="token-cell">
+                                {{ patient.token }}
+                            </td>
+
+
+                            <td>
+
+                                <div class="patient-name">
+                                    {{ patient.name }}
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                {{ patient.age }} / {{ patient.gender }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="type-badge" [class.online]="patient.type === 'Online'"
+                                    [class.walkin]="patient.type === 'Walk-in'">
+                                    {{ patient.type }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+                                {{ patient.appointmentTime }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="status-badge waiting">
+                                    {{ patient.status }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="row-actions">
+
+                                    <button class="speaker-btn" title="Call Patient" (click)="callPatient(patient)">
+                                        <i class="material-icons">campaign</i>
+                                    </button>
+
+                                    <button class="more-btn" title="More Actions" (click)="openActions(patient)">
+                                        <i class="material-icons">more_vert</i>
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- Empty -->
+
+                        <tr *ngIf="filteredQueue.length === 0">
+
+                            <td colspan="8" class="empty-state">
+
+                                <div class="empty-icon">
+                                    <i class="material-icons">groups</i>
+                                </div>
+
+                                <strong>
+                                    No patients in queue
+                                </strong>
+
+                                <span>
+                                    There are no matching patients.
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- Queue Footer -->
+
+            <div class="queue-footer">
+
+                <span>
+                    Showing 1 to {{ filteredQueue.length }}
+                    of {{ waitingCount }} patients
+                </span>
+
+
+                <div class="pagination">
+
+                    <button disabled>
+                        ‹
+                    </button>
+
+                    <button class="active">
+                        1
+                    </button>
+
+                    <button>
+                        2
+                    </button>
+
+                    <button>
+                        ›
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+         RIGHT SIDE
+         ================================================= -->
+
+        <aside class="queue-side">
+
+
+            <!-- ================= NOW SERVING ================= -->
+
+            <div class="side-card now-serving">
+
+                <div class="side-card-header">
+
+                    <h2>Now Serving</h2>
+
+                    <span class="consultation-status">
+                        <i></i>
+                        In Consultation
+                    </span>
+
+                </div>
+
+
+                <div class="serving-body" *ngIf="currentPatient; else noServing">
+
+                    <div class="serving-main">
+
+                        <strong class="serving-token">
+                            {{ shortToken(currentPatient.token) }}
+                        </strong>
+
+                        <h3>
+                            {{ currentPatient.name }}
+                        </h3>
+
+                        <p>
+                            {{ currentPatient.age }}
+                            /
+                            {{ currentPatient.gender }}
+
+                            <span>|</span>
+
+                            {{ currentPatient.type }}
+                        </p>
+
+                        <span class="department-name">
+                            {{ currentPatient.department }}
+                        </span>
+
+
+                        <button class="consultation-button">
+                            <i class="material-icons">medical_information</i>
+                            Consultation in Progress
+                        </button>
+
+                    </div>
+
+
+                    <div class="serving-time">
+
+                        <span>
+                            Consultation Time
+                        </span>
+
+                        <strong>
+                            {{ currentPatient.appointmentTime }}
+                        </strong>
+
+                        <span>
+                            Elapsed Time
+                        </span>
+
+                        <strong>
+                            {{ elapsedMinutes }} mins
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                <ng-template #noServing>
+
+                    <div class="serving-empty">
+                        No patient in consultation.
+                    </div>
+
+                </ng-template>
+
+            </div>
+
+
+            <!-- ================= NEXT IN QUEUE ================= -->
+
+            <div class="side-card next-queue">
+
+                <div class="side-card-header">
+
+                    <h2>Next in Queue</h2>
+
+                </div>
+
+
+                <div class="next-body" *ngIf="nextPatient; else noNext">
+
+                    <div class="next-main">
+
+                        <strong class="next-token">
+                            {{ shortToken(nextPatient.token) }}
+                        </strong>
+
+                        <h3>
+                            {{ nextPatient.name }}
+                        </h3>
+
+                        <p>
+                            {{ nextPatient.age }}
+                            /
+                            {{ nextPatient.gender }}
+
+                            <span>|</span>
+
+                            {{ nextPatient.type }}
+                        </p>
+
+                        <span>
+                            {{ nextPatient.department }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="next-time">
+
+                        <span>
+                            Appointment Time
+                        </span>
+
+                        <strong>
+                            {{ nextPatient.appointmentTime }}
+                        </strong>
+
+                        <span>
+                            Estimated Wait
+                        </span>
+
+                        <strong>
+                            {{ nextPatient.waitingMinutes }} mins
+                        </strong>
+
+                    </div>
+
+
+                    <div class="next-actions">
+                        <button class="call-now" (click)="callPatient(nextPatient)">
+                            <i class="material-icons">hourglass_empty</i>
+                            Waiting
+                        </button>
+
+                        <button class="call-now no-show" (click)="markNoShow()">
+                            <i class="material-icons">person_off</i>
+                            No Show
+                        </button>
+                    </div>
+
+                </div>
+
+                <ng-template #noNext>
+
+                    <div class="serving-empty">
+                        Queue is empty.
+                    </div>
+
+                </ng-template>
+
+            </div>
+
+
+        </aside>
+
+    </div>
+
+</div>

@@ -1,0 +1,289 @@
+<div class="settings-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-title">
+      <div class="header-icon">
+        <i class="material-icons">settings</i>
+      </div>
+
+      <div>
+        <h1>Settings</h1>
+        <p>Manage your hospital configuration, users and system settings.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Tabs -->
+  <div class="tabs settings-tabs">
+    <button
+      class="tab settings-tab"
+      [class.active]="activeTab === 'general'"
+      (click)="setActiveTab('general')"
+    >
+      <i class="material-icons">settings</i>
+      General
+    </button>
+
+    <button
+      class="tab settings-tab"
+      [class.active]="activeTab === 'clinic'"
+      (click)="setActiveTab('clinic')"
+    >
+      <i class="material-icons">business</i>
+      Clinic Details
+    </button>
+
+    <button
+      class="tab settings-tab"
+      [class.active]="activeTab === 'users'"
+      (click)="setActiveTab('users')"
+    >
+      <i class="material-icons">group</i>
+      Users
+    </button>
+
+    <button
+      class="tab settings-tab"
+      [class.active]="activeTab === 'security'"
+      (click)="setActiveTab('security')"
+    >
+      <i class="material-icons">security</i>
+      Security
+    </button>
+
+    <button
+      class="tab settings-tab"
+      [class.active]="activeTab === 'about'"
+      (click)="setActiveTab('about')"
+    >
+      <i class="material-icons">info</i>
+      About System
+    </button>
+  </div>
+
+  <!-- GENERAL -->
+  <div *ngIf="activeTab === 'general'">
+    <!-- Hospital Summary -->
+    <section class="card hospital-summary">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon"><i class="material-icons">business</i></div>
+
+          <div>
+            <h2>Hospital Summary</h2>
+            <p>Quick overview of your hospital/clinic.</p>
+          </div>
+        </div>
+
+        <button class="outline-btn" (click)="editHospital()">
+          <i class="material-icons">edit</i>
+          Edit
+        </button>
+      </div>
+
+      <div class="summary-content">
+        <!-- Hospital -->
+        <div class="hospital-card">
+          <div class="hospital-logo">
+            <i class="material-icons">local_hospital</i>
+          </div>
+
+          <div class="hospital-info">
+            <h2>{{ hospital.name }}</h2>
+            <p>{{ hospital.type }}</p>
+            <span>{{ hospital.tagline }}</span>
+
+            <div class="hospital-contact-grid">
+              <div class="hospital-contact-item">
+                <i class="material-icons">location_on</i>
+                <span>{{ hospital.address }}</span>
+              </div>
+
+              <div class="hospital-contact-item">
+                <i class="material-icons">phone</i>
+                <span>{{ hospital.phone }}</span>
+              </div>
+
+              <a
+                class="hospital-contact-item"
+                [href]="'mailto:' + hospital.email"
+              >
+                <i class="material-icons">email</i>
+                <span>{{ hospital.email }}</span>
+              </a>
+
+              <a
+                class="hospital-contact-item"
+                [href]="hospital.website"
+                target="_blank"
+                rel="noopener noreferrer"
+                *ngIf="hospital.website"
+              >
+                <i class="material-icons">language</i>
+                <span>{{ hospital.website }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Users -->
+    <section class="card users-card">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-icon"><i class="material-icons">group</i></div>
+
+          <div>
+            <h2>Latest Users</h2>
+            <p>
+              The five most recently logged-in users, sorted by latest login.
+            </p>
+          </div>
+        </div>
+
+        <button class="outline-btn" (click)="setActiveTab('users')">
+          <i class="material-icons">manage_accounts</i>
+          Manage Users
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Email</th>
+              <th>Last Login</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let user of users; let i = index">
+              <td>{{ i + 1 }}</td>
+
+              <td>
+                <div class="user-name">
+                  <div class="avatar" [style.background]="user.color">
+                    {{ user.initials }}
+                  </div>
+
+                  <div>
+                    <strong>{{ user.name }}</strong>
+                    <small>{{ user.designation }}</small>
+                  </div>
+                </div>
+              </td>
+
+              <td>{{ user.username }}</td>
+
+              <td>
+                <span class="role" [ngClass]="user.roleClass">
+                  {{ user.role }}
+                </span>
+              </td>
+
+              <td>{{ user.email }}</td>
+
+              <td>{{ user.lastLogin }}</td>
+
+              <td>
+                <span
+                  class="status"
+                  [class.inactive-status]="
+                    user.status.toLowerCase() !== 'active'
+                  "
+                >
+                  <i></i>
+                  {{ user.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Bottom Cards -->
+    <div class="bottom-grid">
+      <!-- Clinic -->
+      <div class="card bottom-card">
+        <div class="bottom-icon blue-icon">
+          <i class="material-icons">business</i>
+        </div>
+
+        <h3>Clinic / Hospital Details</h3>
+
+        <p>
+          View and manage complete hospital information, address, contact
+          details, working hours and more.
+        </p>
+
+        <button class="bottom-btn blue-btn" (click)="setActiveTab('clinic')">
+          View Details
+          <i class="material-icons">arrow_forward</i>
+        </button>
+      </div>
+
+      <!-- Security -->
+      <div class="card bottom-card">
+        <div class="bottom-icon purple-icon">
+          <i class="material-icons">security</i>
+        </div>
+
+        <h3>Security Settings</h3>
+
+        <p>
+          Manage authentication, password policies, session settings and access
+          controls.
+        </p>
+
+        <button
+          class="bottom-btn purple-btn"
+          (click)="setActiveTab('security')"
+        >
+          Configure Security
+          <i class="material-icons">arrow_forward</i>
+        </button>
+      </div>
+
+      <!-- About -->
+      <div class="card bottom-card">
+        <div class="bottom-icon green-icon">
+          <i class="material-icons">info</i>
+        </div>
+
+        <h3>About System</h3>
+
+        <p>View system information, version details and licenses.</p>
+
+        <button class="bottom-btn green-btn" (click)="setActiveTab('about')">
+          View Details
+          <i class="material-icons">arrow_forward</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <app-settings-users
+    *ngIf="activeTab === 'users'"
+    (tabChange)="setActiveTab($event)"
+  ></app-settings-users>
+
+  <!-- SECURITY -->
+  <div *ngIf="activeTab === 'security'" class="placeholder-page">
+    <h2>Security Settings</h2>
+    <p>Manage authentication, password and session security.</p>
+  </div>
+
+  <!-- CLINIC -->
+  <app-clinic-details *ngIf="activeTab === 'clinic'"></app-clinic-details>
+
+  <!-- ABOUT -->
+  <app-about-system *ngIf="activeTab === 'about'"></app-about-system>
+</div>

@@ -1,0 +1,453 @@
+<div class="clinic-details-page">
+  <p class="clinic-message error" *ngIf="loadError">{{ loadError }}</p>
+
+  <!-- ================= MAIN GRID ================= -->
+
+  <div class="clinic-grid">
+    <!-- ================= LEFT COLUMN ================= -->
+
+    <div class="left-column">
+      <!-- Basic Information -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-icon blue">
+            <i class="material-icons">business</i>
+          </div>
+
+          <div>
+            <h2>Basic Information</h2>
+            <p>Update your clinic/hospital details and branding information.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <!-- Hospital Name -->
+          <div class="form-group">
+            <label> Hospital/Clinic Name <span>*</span> </label>
+
+            <input
+              type="text"
+              [(ngModel)]="clinic.name"
+              placeholder="Enter hospital name"
+            />
+          </div>
+
+          <!-- Tagline -->
+          <div class="form-group">
+            <label>Tagline / Motto</label>
+
+            <input
+              type="text"
+              [(ngModel)]="clinic.tagline"
+              placeholder="Enter tagline"
+            />
+          </div>
+
+          <!-- Short Name -->
+          <div class="form-group">
+            <label> Short Name <span>*</span> </label>
+
+            <input
+              type="text"
+              [(ngModel)]="clinic.shortName"
+              placeholder="Enter short name"
+            />
+          </div>
+
+          <!-- Website -->
+          <div class="form-group">
+            <label>Website</label>
+
+            <input
+              type="text"
+              [(ngModel)]="clinic.website"
+              placeholder="https://example.com"
+            />
+          </div>
+
+          <!-- Hospital Type -->
+          <div class="form-group">
+            <label> Hospital Type <span>*</span> </label>
+
+            <select [(ngModel)]="clinic.type">
+              <option value="">Select type</option>
+              <option>Multi-Speciality Hospital</option>
+              <option>General Hospital</option>
+              <option>Speciality Hospital</option>
+              <option>Clinic</option>
+              <option>Diagnostic Center</option>
+            </select>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label> Email Address <span>*</span> </label>
+
+            <input
+              type="email"
+              [(ngModel)]="clinic.email"
+              placeholder="Enter email"
+            />
+          </div>
+
+          <!-- Registration Number -->
+          <div class="form-group">
+            <label>Registration Number</label>
+
+            <input
+              type="text"
+              [(ngModel)]="clinic.registrationNumber"
+              placeholder="Enter registration number"
+            />
+          </div>
+
+          <!-- Phone -->
+          <div class="form-group">
+            <label> Phone Number <span>*</span> </label>
+
+            <input
+              type="text"
+              [(ngModel)]="clinic.phone"
+              placeholder="Enter phone number"
+            />
+          </div>
+
+          <!-- License -->
+          <div class="form-group">
+            <label>License Number</label>
+
+            <input
+              type="text"
+              [(ngModel)]="clinic.licenseNumber"
+              placeholder="Enter license number"
+            />
+          </div>
+
+          <!-- Alternate Phone -->
+          <div class="form-group">
+            <label>Alternate Phone Number</label>
+
+            <input
+              type="text"
+              [(ngModel)]="clinic.alternatePhone"
+              placeholder="Enter alternate phone"
+            />
+          </div>
+
+          <!-- Established Year -->
+          <div class="form-group">
+            <label>Established Year</label>
+
+            <input type="number" [(ngModel)]="clinic.establishedYear" />
+          </div>
+
+          <!-- Time Zone -->
+          <div class="form-group">
+            <label>Time Zone</label>
+
+            <select [(ngModel)]="clinic.timeZone">
+              <option>(GMT+05:30) India Standard Time (IST)</option>
+
+              <option>(GMT+00:00) Greenwich Mean Time (GMT)</option>
+
+              <option>(GMT-05:00) Eastern Standard Time (EST)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Working Hours -->
+      <section class="card working-hours-card">
+        <div class="card-header">
+          <div class="card-icon blue">
+            <i class="material-icons">schedule</i>
+          </div>
+
+          <div>
+            <h2>Working Hours</h2>
+            <p>Set your hospital/clinic working hours.</p>
+          </div>
+        </div>
+
+        <div class="working-hours">
+          <div class="days">
+            <div class="day-row" *ngFor="let day of workingHours">
+              <div class="day-name">
+                {{ day.day }}
+              </div>
+
+              <input
+                type="time"
+                [(ngModel)]="day.start"
+                [disabled]="day.closed"
+              />
+
+              <span>−</span>
+
+              <input
+                type="time"
+                [(ngModel)]="day.end"
+                [disabled]="day.closed"
+              />
+            </div>
+          </div>
+
+          <div class="working-settings">
+            <!-- Consultation -->
+            <div class="form-group">
+              <label>Consultation Slot Duration</label>
+
+              <select [(ngModel)]="clinic.slotDuration">
+                <option>10 minutes</option>
+                <option>15 minutes</option>
+                <option>20 minutes</option>
+                <option>30 minutes</option>
+                <option>45 minutes</option>
+                <option>60 minutes</option>
+              </select>
+            </div>
+
+            <!-- Lunch -->
+            <div class="form-group">
+              <label>Lunch Break</label>
+
+              <div class="time-range">
+                <input type="time" [(ngModel)]="clinic.lunchStart" />
+
+                <span>−</span>
+
+                <input type="time" [(ngModel)]="clinic.lunchEnd" />
+              </div>
+            </div>
+
+            <!-- Time Format -->
+            <div class="time-format">
+              <label>Time Format</label>
+
+              <div class="radio-options">
+                <label>
+                  <input
+                    type="radio"
+                    name="timeFormat"
+                    value="12"
+                    [(ngModel)]="clinic.timeFormat"
+                  />
+                  <span>12 Hour (AM/PM)</span>
+                </label>
+
+                <label>
+                  <input
+                    type="radio"
+                    name="timeFormat"
+                    value="24"
+                    [(ngModel)]="clinic.timeFormat"
+                  />
+                  <span>24 Hour</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= RIGHT COLUMN ================= -->
+
+    <div class="right-column">
+      <!-- Logo & Branding -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-icon blue">
+            <i class="material-icons">palette</i>
+          </div>
+
+          <div>
+            <h2>Hospital Logo & Branding</h2>
+            <p>Upload your hospital logo and set brand preferences.</p>
+          </div>
+        </div>
+
+        <div class="branding-content">
+          <!-- Logo -->
+          <div class="logo-upload" (click)="logoInput.click()">
+            <div class="hospital-logo">
+              <i class="material-icons">local_hospital</i>
+            </div>
+
+            <strong>Click to upload logo</strong>
+
+            <span>PNG, JPG (Max 2MB)</span>
+
+            <input
+              #logoInput
+              type="file"
+              hidden
+              accept="image/png,image/jpeg"
+              (change)="uploadLogo($event)"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Address -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-icon blue">
+            <i class="material-icons">location_on</i>
+          </div>
+
+          <div>
+            <h2>Address Information</h2>
+            <p>Update your clinic/hospital address details.</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label> Address Line 1 <span>*</span> </label>
+
+          <input
+            type="text"
+            [(ngModel)]="clinic.address1"
+            placeholder="Enter address"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Address Line 2</label>
+
+          <input
+            type="text"
+            [(ngModel)]="clinic.address2"
+            placeholder="Enter address"
+          />
+        </div>
+
+        <div class="address-grid">
+          <div class="form-group">
+            <label>City <span>*</span></label>
+
+            <input type="text" [(ngModel)]="clinic.city" />
+          </div>
+
+          <div class="form-group">
+            <label>State <span>*</span></label>
+
+            <select [(ngModel)]="clinic.state">
+              <option>Tamil Nadu</option>
+              <option>Kerala</option>
+              <option>Karnataka</option>
+              <option>Andhra Pradesh</option>
+              <option>Telangana</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Pincode <span>*</span></label>
+
+            <input type="text" [(ngModel)]="clinic.pincode" />
+          </div>
+
+          <div class="form-group">
+            <label>Country <span>*</span></label>
+
+            <select [(ngModel)]="clinic.country">
+              <option>India</option>
+              <option>Singapore</option>
+              <option>United Arab Emirates</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Additional Information -->
+      <section class="card additional-card">
+        <div class="card-header">
+          <div class="card-icon blue">▤</div>
+
+          <div>
+            <h2>Additional Information</h2>
+            <p>Other important details about your clinic/hospital.</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+
+          <textarea
+            rows="3"
+            [(ngModel)]="clinic.description"
+            placeholder="Enter description"
+          >
+          </textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Facilities</label>
+
+          <div class="facility-tags">
+            <span *ngFor="let facility of facilities">
+              {{ facility }}
+
+              <button type="button" (click)="removeFacility(facility)">
+                ×
+              </button>
+            </span>
+
+            <button type="button" class="add-facility" (click)="addFacility()">
+              <i class="material-icons">add</i>
+              Add Facility
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Bottom Actions -->
+  <div class="page-actions">
+    <button class="cancel-btn" (click)="cancel()">Cancel</button>
+
+    <button
+      class="save-btn"
+      (click)="saveChanges()"
+      [disabled]="saving || loading"
+    >
+      <i class="material-icons">save</i>
+      {{ saving ? "Saving..." : "Save Changes" }}
+    </button>
+  </div>
+
+  <div
+    class="dialog-overlay"
+    *ngIf="showSuccessDialog"
+    (click)="closeSuccessDialog()"
+  ></div>
+
+  <div
+    class="success-dialog"
+    *ngIf="showSuccessDialog"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Clinic details save success"
+  >
+    <button
+      type="button"
+      class="dialog-close"
+      (click)="closeSuccessDialog()"
+      aria-label="Close"
+    >
+      <i class="material-icons">close</i>
+    </button>
+
+    <div class="success-icon">
+      <i class="material-icons">check</i>
+    </div>
+
+    <h3>Clinic Details Saved Successfully</h3>
+    <p>{{ successDialogMessage }}</p>
+
+    <button type="button" class="success-done" (click)="closeSuccessDialog()">
+      Done
+    </button>
+  </div>
+</div>

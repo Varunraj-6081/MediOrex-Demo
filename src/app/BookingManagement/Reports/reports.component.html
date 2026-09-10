@@ -1,0 +1,856 @@
+<div class="reports-page">
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+
+  <div class="page-header">
+    <div class="page-heading">
+      <div class="heading-icon">
+        <span class="material-icons">analytics</span>
+      </div>
+
+      <div>
+        <h1>Reports & Analytics</h1>
+
+        <p>Overview of appointments, patients and clinic performance.</p>
+      </div>
+    </div>
+
+    <div class="header-actions" *ngIf="activeTab === 'analytics'">
+      <app-date-range-picker
+        [startDate]="reportStartDate"
+        [endDate]="reportEndDate"
+        (dateRangeChange)="onDateRangeChange($event)"
+      />
+
+      <button class="report-icon-btn" (click)="refreshReport()" title="Refresh">
+        <i class="material-icons">refresh</i>
+      </button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button
+      *ngFor="let tab of tabs"
+      class="tab"
+      [class.active]="activeTab === tab.id"
+      (click)="selectTab(tab.id)"
+    >
+      <i class="material-icons">{{ tab.icon }}</i>
+      {{ tab.label }}
+    </button>
+  </div>
+
+  <div *ngIf="activeTab === 'analytics'">
+    <div class="kpi-grid">
+      <div class="kpi-card purple">
+        <div class="kpi-icon"><i class="material-icons">group</i></div>
+        <div class="kpi-content">
+          <span class="kpi-title">Total Patients</span>
+          <div class="kpi-value-row">
+            <strong>{{ reportData.totalPatients }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card blue">
+        <div class="kpi-icon">
+          <i class="material-icons">event_available</i>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-title">Total Appointments</span>
+          <div class="kpi-value-row">
+            <strong>{{ reportData.totalAppointments }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card orange">
+        <div class="kpi-icon"><i class="material-icons">event_busy</i></div>
+        <div class="kpi-content">
+          <span class="kpi-title">Cancelled Appointments</span>
+          <div class="kpi-value-row">
+            <strong>{{ reportData.totalCancelledAppointments }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card green">
+        <div class="kpi-icon"><i class="material-icons">receipt_long</i></div>
+        <div class="kpi-content">
+          <span class="kpi-title">Total Bills</span>
+          <div class="kpi-value-row">
+            <strong>{{ reportData.totalBills }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card teal">
+        <div class="kpi-icon"><i class="material-icons">payments</i></div>
+        <div class="kpi-content">
+          <span class="kpi-title">Total Bill Amount</span>
+          <div class="kpi-value-row">
+            <strong>{{ formatBillAmount(reportData.totalBillAmount) }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card red">
+        <div class="kpi-icon"><i class="material-icons">receipt_long</i></div>
+        <div class="kpi-content">
+          <span class="kpi-title">Cancelled Bills</span>
+          <div class="kpi-value-row">
+            <strong>{{ reportData.totalCancelledBills }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+       CHART ROW
+       ===================================================== -->
+
+    <div class="chart-grid">
+      <!-- ===================================================
+         APPOINTMENT STATUS
+         =================================================== -->
+
+      <section class="chart-card status-card appointment-status-card">
+        <div class="chart-header">
+          <h2>Appointment Status</h2>
+        </div>
+
+        <div class="status-content appointment-status-content">
+          <div class="appointment-bars">
+            <div class="appointment-bar-row">
+              <div class="appointment-bar-label">
+                <span><i class="status-color completed"></i>Completed</span>
+                <strong>{{ appointmentStatus.completed }}</strong>
+              </div>
+              <div class="appointment-bar-track">
+                <span
+                  class="appointment-bar-fill completed"
+                  [style.width.%]="
+                    percentage(
+                      appointmentStatus.completed,
+                      appointmentStatusTotal()
+                    )
+                  "
+                ></span>
+              </div>
+            </div>
+
+            <div class="appointment-bar-row">
+              <div class="appointment-bar-label">
+                <span><i class="status-color waiting"></i>Waiting</span>
+                <strong>{{ appointmentStatus.waiting }}</strong>
+              </div>
+              <div class="appointment-bar-track">
+                <span
+                  class="appointment-bar-fill waiting"
+                  [style.width.%]="
+                    percentage(
+                      appointmentStatus.waiting,
+                      appointmentStatusTotal()
+                    )
+                  "
+                ></span>
+              </div>
+            </div>
+
+            <div class="appointment-bar-row">
+              <div class="appointment-bar-label">
+                <span><i class="status-color cancelled"></i>Cancelled</span>
+                <strong>{{ appointmentStatus.cancelled }}</strong>
+              </div>
+              <div class="appointment-bar-track">
+                <span
+                  class="appointment-bar-fill cancelled"
+                  [style.width.%]="
+                    percentage(
+                      appointmentStatus.cancelled,
+                      appointmentStatusTotal()
+                    )
+                  "
+                ></span>
+              </div>
+            </div>
+
+            <div class="appointment-bar-row">
+              <div class="appointment-bar-label">
+                <span><i class="status-color noshow"></i>No Show</span>
+                <strong>{{ appointmentStatus.noShow }}</strong>
+              </div>
+              <div class="appointment-bar-track">
+                <span
+                  class="appointment-bar-fill noshow"
+                  [style.width.%]="
+                    percentage(
+                      appointmentStatus.noShow,
+                      appointmentStatusTotal()
+                    )
+                  "
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+         PAYMENT METHOD STATUS
+         =================================================== -->
+
+      <section class="chart-card status-card payment-status-card">
+        <div class="chart-header">
+          <div>
+            <span class="section-eyebrow">Billing overview</span>
+            <h2>Payment Method Status</h2>
+          </div>
+          <span class="payment-status-total"
+            >{{ reportData.totalBills }} bills tracked</span
+          >
+        </div>
+
+        <div class="status-content payment-status-content">
+          <div class="donut-wrapper">
+            <div
+              class="donut payment-donut"
+              [style.background]="paymentDonutStyle()"
+            >
+              <div class="donut-center">
+                <strong>{{ reportData.totalBills }}</strong>
+                <span>Total Bills</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-list">
+            <div class="status-row">
+              <span class="status-color payment-cash"></span>
+              <span class="status-name">Cash</span>
+              <strong
+                >{{ paymentMethods.cash }} ({{
+                  percentage(paymentMethods.cash, paymentMethodTotal())
+                }}%)</strong
+              >
+            </div>
+            <div class="status-row">
+              <span class="status-color payment-card"></span>
+              <span class="status-name">Card</span>
+              <strong
+                >{{ paymentMethods.card }} ({{
+                  percentage(paymentMethods.card, paymentMethodTotal())
+                }}%)</strong
+              >
+            </div>
+            <div class="status-row">
+              <span class="status-color payment-online"></span>
+              <span class="status-name">Online</span>
+              <strong
+                >{{ paymentMethods.online }} ({{
+                  percentage(paymentMethods.online, paymentMethodTotal())
+                }}%)</strong
+              >
+            </div>
+            <div class="status-row">
+              <span class="status-color payment-credit"></span>
+              <span class="status-name">Credit</span>
+              <strong
+                >{{ paymentMethods.credit }} ({{
+                  percentage(paymentMethods.credit, paymentMethodTotal())
+                }}%)</strong
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       PATIENT REPORT
+       ===================================================== -->
+
+  <div *ngIf="activeTab === 'patients'">
+    <div class="report-toolbar">
+      <div class="report-search">
+        <i class="material-icons">search</i>
+        <input
+          type="text"
+          [(ngModel)]="patientSearch"
+          (input)="patientPage = 1"
+          placeholder="Search ID, name, mobile, city..."
+        />
+      </div>
+
+      <app-date-range-picker
+        [startDate]="patientStart"
+        [endDate]="patientEnd"
+        (dateRangeChange)="onPatientDateRangeChange($event)"
+      />
+
+      <button class="report-icon-btn" (click)="loadPatients()" title="Refresh">
+        <i class="material-icons">refresh</i>
+      </button>
+
+      <button
+        class="report-export-btn"
+        (click)="exportPatients()"
+        title="Export"
+      >
+        <span class="material-icons">file_download</span>
+        Export
+      </button>
+    </div>
+
+    <div class="report-error" *ngIf="patientError">{{ patientError }}</div>
+
+    <div class="report-card">
+      <div class="report-card-header">
+        <h2>Patient Report</h2>
+        <span>{{ filteredPatients.length }} records</span>
+      </div>
+
+      <div class="report-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" (click)="sortPatients('registrationId')">
+                Registration ID
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'registrationId'"
+                  >{{
+                    sortIcon(patientSortKey, "registrationId", patientSortDir)
+                  }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('name')">
+                Patient Name
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'name'"
+                  >{{ sortIcon(patientSortKey, "name", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('age')">
+                Age / Sex
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'age'"
+                  >{{ sortIcon(patientSortKey, "age", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('dateOfBirth')">
+                Date of Birth
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'dateOfBirth'"
+                  >{{
+                    sortIcon(patientSortKey, "dateOfBirth", patientSortDir)
+                  }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('bloodGroup')">
+                Blood Group
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'bloodGroup'"
+                  >{{
+                    sortIcon(patientSortKey, "bloodGroup", patientSortDir)
+                  }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('mobile')">
+                Mobile Number
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'mobile'"
+                  >{{ sortIcon(patientSortKey, "mobile", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('email')">
+                Email
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'email'"
+                  >{{ sortIcon(patientSortKey, "email", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('address')">
+                Address 1
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'address'"
+                  >{{ sortIcon(patientSortKey, "address", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('address2')">
+                Address 2
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'address2'"
+                  >{{ sortIcon(patientSortKey, "address2", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('city')">
+                City
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'city'"
+                  >{{ sortIcon(patientSortKey, "city", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('state')">
+                State
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'state'"
+                  >{{ sortIcon(patientSortKey, "state", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('pincode')">
+                Pincode
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'pincode'"
+                  >{{ sortIcon(patientSortKey, "pincode", patientSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('emergencyMobile')">
+                Emergency Contact
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'emergencyMobile'"
+                  >{{
+                    sortIcon(patientSortKey, "emergencyMobile", patientSortDir)
+                  }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('patientStatus')">
+                Status
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'patientStatus'"
+                  >{{
+                    sortIcon(patientSortKey, "patientStatus", patientSortDir)
+                  }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortPatients('registeredOn')">
+                Registered On
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="patientSortKey === 'registeredOn'"
+                  >{{
+                    sortIcon(patientSortKey, "registeredOn", patientSortDir)
+                  }}</i
+                >
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngIf="isLoadingPatients">
+              <td colspan="6" class="empty-state">Loading patient report...</td>
+            </tr>
+
+            <tr *ngFor="let row of patientPagedRows">
+              <td class="row-id">{{ row.registrationId }}</td>
+              <td class="row-name">{{ row.name }}</td>
+              <td>{{ row.age ?? "—" }} / {{ row.gender || "—" }}</td>
+              <td>{{ row.dateOfBirth || "—" }}</td>
+              <td>{{ row.bloodGroup || "—" }}</td>
+              <td>{{ row.mobile }}</td>
+              <td>{{ row.email || "—" }}</td>
+              <td>{{ row.address || "—" }}</td>
+              <td>{{ row.address2 || "—" }}</td>
+              <td>{{ row.city || "—" }}</td>
+              <td>{{ row.state || "—" }}</td>
+              <td>{{ row.pincode || "—" }}</td>
+              <td>{{ row.emergencyMobile || "—" }}</td>
+              <td>{{ row.patientStatus || "—" }}</td>
+              <td>{{ row.registeredOn }}</td>
+            </tr>
+
+            <tr *ngIf="!isLoadingPatients && filteredPatients.length === 0">
+              <td colspan="15" class="empty-state">
+                No patient records for this period.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-pagination">
+        <span>{{ patientRangeLabel() }}</span>
+
+        <div class="report-page-controls">
+          <select
+            [(ngModel)]="patientPageSize"
+            (ngModelChange)="onPatientPageSizeChange()"
+          >
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }} / page
+            </option>
+          </select>
+
+          <button (click)="patientPrevPage()" [disabled]="patientPage <= 1">
+            ‹
+          </button>
+
+          <span>{{ patientPage }} / {{ patientTotalPages() }}</span>
+
+          <button
+            (click)="patientNextPage()"
+            [disabled]="patientPage >= patientTotalPages()"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       TOKEN REPORT
+       ===================================================== -->
+
+  <div *ngIf="activeTab === 'tokens'">
+    <div class="report-toolbar">
+      <div class="report-search">
+        <i class="material-icons">search</i>
+        <input
+          type="text"
+          [(ngModel)]="tokenSearch"
+          (input)="tokenPage = 1"
+          placeholder="Search token, appointment, patient..."
+        />
+      </div>
+
+      <app-date-range-picker
+        [startDate]="tokenStart"
+        [endDate]="tokenEnd"
+        (dateRangeChange)="onTokenDateRangeChange($event)"
+      />
+
+      <button class="report-icon-btn" (click)="loadTokens()" title="Refresh">
+        <i class="material-icons">refresh</i>
+      </button>
+
+      <button class="report-export-btn" (click)="exportTokens()" title="Export">
+        <span class="material-icons">file_download</span>
+        Export
+      </button>
+    </div>
+
+    <div class="report-error" *ngIf="tokenError">{{ tokenError }}</div>
+
+    <div class="report-card">
+      <div class="report-card-header">
+        <h2>Token Report</h2>
+        <span>{{ filteredTokens.length }} records</span>
+      </div>
+
+      <div class="report-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" (click)="sortTokens('token')">
+                Token
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'token'"
+                  >{{ sortIcon(tokenSortKey, "token", tokenSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortTokens('appointmentNo')">
+                Appointment No
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'appointmentNo'"
+                  >{{
+                    sortIcon(tokenSortKey, "appointmentNo", tokenSortDir)
+                  }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortTokens('patient')">
+                Patient
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'patient'"
+                  >{{ sortIcon(tokenSortKey, "patient", tokenSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortTokens('department')">
+                Department
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'department'"
+                  >{{ sortIcon(tokenSortKey, "department", tokenSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortTokens('doctor')">
+                Doctor
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'doctor'"
+                  >{{ sortIcon(tokenSortKey, "doctor", tokenSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortTokens('date')">
+                Date
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'date'"
+                  >{{ sortIcon(tokenSortKey, "date", tokenSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortTokens('time')">
+                Time
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'time'"
+                  >{{ sortIcon(tokenSortKey, "time", tokenSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortTokens('type')">
+                Type
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'type'"
+                  >{{ sortIcon(tokenSortKey, "type", tokenSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortTokens('status')">
+                Status
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="tokenSortKey === 'status'"
+                  >{{ sortIcon(tokenSortKey, "status", tokenSortDir) }}</i
+                >
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngIf="isLoadingTokens">
+              <td colspan="9" class="empty-state">Loading token report...</td>
+            </tr>
+
+            <tr *ngFor="let row of tokenPagedRows">
+              <td class="row-id">{{ row.token }}</td>
+              <td>{{ row.appointmentNo }}</td>
+              <td class="row-name">{{ row.patient }}</td>
+              <td>{{ row.department }}</td>
+              <td>{{ row.doctor }}</td>
+              <td>{{ row.date }}</td>
+              <td>{{ row.time }}</td>
+              <td>{{ row.type }}</td>
+              <td>{{ row.status }}</td>
+            </tr>
+
+            <tr *ngIf="!isLoadingTokens && filteredTokens.length === 0">
+              <td colspan="9" class="empty-state">
+                No token records for this period.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-pagination">
+        <span>{{ tokenRangeLabel() }}</span>
+
+        <div class="report-page-controls">
+          <select
+            [(ngModel)]="tokenPageSize"
+            (ngModelChange)="onTokenPageSizeChange()"
+          >
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }} / page
+            </option>
+          </select>
+
+          <button (click)="tokenPrevPage()" [disabled]="tokenPage <= 1">
+            ‹
+          </button>
+
+          <span>{{ tokenPage }} / {{ tokenTotalPages() }}</span>
+
+          <button
+            (click)="tokenNextPage()"
+            [disabled]="tokenPage >= tokenTotalPages()"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       BILL REPORT
+       ===================================================== -->
+
+  <div *ngIf="activeTab === 'bills'">
+    <div class="report-toolbar">
+      <div class="report-search">
+        <i class="material-icons">search</i>
+        <input
+          type="text"
+          [(ngModel)]="billSearch"
+          (input)="billPage = 1"
+          placeholder="Search bill no, patient, doctor..."
+        />
+      </div>
+
+      <app-date-range-picker
+        [startDate]="billStart"
+        [endDate]="billEnd"
+        (dateRangeChange)="onBillDateRangeChange($event)"
+      />
+
+      <button class="report-icon-btn" (click)="loadBills()" title="Refresh">
+        <i class="material-icons">refresh</i>
+      </button>
+
+      <button class="report-export-btn" (click)="exportBills()" title="Export">
+        <span class="material-icons">file_download</span>
+        Export
+      </button>
+    </div>
+
+    <div class="report-error" *ngIf="billError">{{ billError }}</div>
+
+    <div class="report-card">
+      <div class="report-card-header">
+        <h2>Bill Report</h2>
+        <span>{{ filteredBills.length }} records</span>
+      </div>
+
+      <div class="report-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" (click)="sortBills('billNo')">
+                Bill No
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="billSortKey === 'billNo'"
+                  >{{ sortIcon(billSortKey, "billNo", billSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortBills('date')">
+                Date
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="billSortKey === 'date'"
+                  >{{ sortIcon(billSortKey, "date", billSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortBills('patient')">
+                Patient
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="billSortKey === 'patient'"
+                  >{{ sortIcon(billSortKey, "patient", billSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortBills('department')">
+                Department
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="billSortKey === 'department'"
+                  >{{ sortIcon(billSortKey, "department", billSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortBills('doctor')">
+                Doctor
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="billSortKey === 'doctor'"
+                  >{{ sortIcon(billSortKey, "doctor", billSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortBills('amount')">
+                Amount (₹)
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="billSortKey === 'amount'"
+                  >{{ sortIcon(billSortKey, "amount", billSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortBills('paymentMode')">
+                Payment
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="billSortKey === 'paymentMode'"
+                  >{{ sortIcon(billSortKey, "paymentMode", billSortDir) }}</i
+                >
+              </th>
+              <th class="sortable" (click)="sortBills('status')">
+                Status
+                <i
+                  class="material-icons sort-icon"
+                  [class.active]="billSortKey === 'status'"
+                  >{{ sortIcon(billSortKey, "status", billSortDir) }}</i
+                >
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngIf="isLoadingBills">
+              <td colspan="8" class="empty-state">Loading bill report...</td>
+            </tr>
+
+            <tr *ngFor="let row of billPagedRows">
+              <td class="row-id">{{ row.billNo }}</td>
+              <td>{{ row.date }}</td>
+              <td class="row-name">{{ row.patient }}</td>
+              <td>{{ row.department }}</td>
+              <td>{{ row.doctor }}</td>
+              <td>{{ row.amount | number: "1.2-2" }}</td>
+              <td>{{ row.paymentMode }}</td>
+              <td>{{ row.status }}</td>
+            </tr>
+
+            <tr *ngIf="!isLoadingBills && filteredBills.length === 0">
+              <td colspan="8" class="empty-state">
+                No bill records for this period.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-pagination">
+        <span>{{ billRangeLabel() }}</span>
+
+        <div class="report-page-controls">
+          <select
+            [(ngModel)]="billPageSize"
+            (ngModelChange)="onBillPageSizeChange()"
+          >
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }} / page
+            </option>
+          </select>
+
+          <button (click)="billPrevPage()" [disabled]="billPage <= 1">‹</button>
+
+          <span>{{ billPage }} / {{ billTotalPages() }}</span>
+
+          <button
+            (click)="billNextPage()"
+            [disabled]="billPage >= billTotalPages()"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

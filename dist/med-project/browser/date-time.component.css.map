@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/shared/date-time/date-time.component.css"],
+  "sourcesContent": [":host {\n    display: block;\n    margin-left: auto;\n}\n\n.date-time {\n    display: flex;\n    align-items: center;\n    gap: 10px;\n    color: #304b78;\n    font-size: 14px;\n}\n\n.date-time .material-icons {\n    font-size: 18px;\n    line-height: 1;\n}\n\n.date-divider {\n    color: #9aabc2;\n}\n\n@media (max-width: 800px) {\n    :host {\n        display: none;\n    }\n\n    .date-time {\n        display: none;\n    }\n}\n"],
+  "mappings": ";AAAA;AACI,WAAS;AACT,eAAa;AACjB;AAEA,CAAC;AACG,WAAS;AACT,eAAa;AACb,OAAK;AACL,SAAO;AACP,aAAW;AACf;AAEA,CARC,UAQU,CAAC;AACR,aAAW;AACX,eAAa;AACjB;AAEA,CAAC;AACG,SAAO;AACX;AAEA,OAAO,CAAC,SAAS,EAAE;AACf;AACI,aAAS;AACb;AAEA,GAtBH;AAuBO,aAAS;AACb;AACJ;",
+  "names": []
+}

@@ -1,0 +1,333 @@
+<div class="patient-view">
+
+    <!-- =====================================================
+       PAGE HEADER (same style as Patient Registration)
+       ===================================================== -->
+
+    <div class="view-header">
+
+        <div class="header-content">
+
+            <div class="header-icon">
+                <i class="material-icons">list_alt</i>
+            </div>
+
+            <div>
+                <h2>View Patients</h2>
+
+                <p>
+                    Search and view registered patient information.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+       FILTERS (date + search, like View Bills)
+       ===================================================== -->
+
+    <div class="filter-card">
+
+        <div class="filter-field search-field">
+            <label>Search</label>
+
+            <div class="search-wrapper">
+                <i class="material-icons search-icon">search</i>
+
+                <input
+                    type="text"
+                    [(ngModel)]="searchText"
+                    (ngModelChange)="applySearch()"
+                    placeholder="Search by name, ID, mobile, email or city..." />
+            </div>
+        </div>
+
+        <div class="filter-field date-field">
+            <label>Date Range</label>
+
+            <app-date-range-picker
+                [startDate]="startDate"
+                [endDate]="endDate"
+                (dateRangeChange)="onDateRangeChange($event)" />
+        </div>
+
+        <div class="filter-actions">
+            <button type="button" class="search-btn" (click)="applyFilters()">
+                Search
+            </button>
+
+            <button type="button" class="secondary-btn" (click)="resetFilters()">
+                Reset
+            </button>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+       LIST (table like View Bills, no print)
+       ===================================================== -->
+
+    <div class="list-card">
+
+        <table *ngIf="!isLoading && filteredPatients.length > 0; else emptyState">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Patient ID</th>
+                    <th>Reg Date</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Mobile</th>
+                    <th>Email ID</th>
+                    <th>Blood Group</th>
+                    <th>City</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let patient of filteredPatients; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td class="patient-id">{{ patient.patientId }}</td>
+                    <td>{{ patient.registrationDate }}</td>
+                    <td>{{ patient.name }}</td>
+                    <td>{{ patient.age }}</td>
+                    <td>{{ patient.gender }}</td>
+                    <td>{{ patient.mobile }}</td>
+                    <td>{{ patient.email }}</td>
+                    <td>{{ patient.bloodGroup }}</td>
+                    <td>{{ patient.city }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button type="button" title="View" (click)="viewPatient(patient)">
+                                <i class="material-icons">visibility</i>
+                            </button>
+                            <button type="button" title="Edit" (click)="editPatient(patient)">
+                                <i class="material-icons">edit</i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination" *ngIf="!isLoading && total > 0">
+            <span>
+                Showing {{ rangeStart }} to {{ rangeEnd }}
+                of {{ total }} patients
+            </span>
+
+            <div class="pages">
+                <button type="button" (click)="prevPage()" [disabled]="page <= 1">
+                    ‹ Prev
+                </button>
+
+                <span class="page-info">Page {{ page }} of {{ totalPages }}</span>
+
+                <button type="button" (click)="nextPage()" [disabled]="page >= totalPages">
+                    Next ›
+                </button>
+
+                <select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()" aria-label="Rows per page">
+                    <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }} / page</option>
+                </select>
+            </div>
+        </div>
+
+        <ng-template #emptyState>
+            <div class="empty-state">
+                <i class="material-icons">person_search</i>
+                <p *ngIf="isLoading">Loading patients...</p>
+                <p *ngIf="!isLoading && loadError">{{ loadError }}</p>
+                <p *ngIf="!isLoading && !loadError">No patients found.</p>
+                <span *ngIf="!isLoading && !loadError">Try a different date range or search, or register a new patient.</span>
+            </div>
+        </ng-template>
+
+    </div>
+
+
+    <!-- =====================================================
+       DETAILS DRAWER (like Billing bill drawer, no print)
+       Full preview like Patient Registration preview
+       ===================================================== -->
+
+    <div class="drawer-overlay" *ngIf="showPatientDetails" (click)="closeDetails()"></div>
+
+    <aside class="patient-drawer" [class.open]="showPatientDetails">
+
+        <div class="drawer-header">
+            <h2>Patient Details</h2>
+
+            <button type="button" (click)="closeDetails()" class="close-btn">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+
+        <div class="drawer-tabs">
+            <button type="button" class="active">
+                Patient Preview
+            </button>
+        </div>
+
+        <div class="drawer-body" *ngIf="selectedPatient">
+
+            <div class="patient-preview">
+
+                <div class="large-avatar">
+                    {{ getInitials() }}
+                </div>
+
+                <h3>{{ selectedPatient.name }}</h3>
+
+                <span class="preview-id">{{ selectedPatient.patientId }}</span>
+
+                <span class="preview-meta"><span *ngIf="selectedPatient.registrationType">{{ selectedPatient.registrationType }} · </span>{{ selectedPatient.registrationDate }}</span>
+
+            </div>
+
+            <div class="preview-section">
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <div class="section-icon blue">
+                            <i class="material-icons">person</i>
+                        </div>
+                        <div>
+                            <h4>Personal Details</h4>
+                            <span>Enter patient's basic information</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-details">
+                    <div><span>First Name</span><strong>{{ selectedPatient.firstName }}</strong></div>
+                    <div><span>Last Name</span><strong>{{ selectedPatient.lastName || '—' }}</strong></div>
+                    <div><span>Date of Birth</span><strong>{{ selectedPatient.dateOfBirth }}</strong></div>
+                    <div><span>Age</span><strong>{{ selectedPatient.age }}</strong></div>
+                    <div><span>Gender</span><strong>{{ selectedPatient.gender }}</strong></div>
+                    <div><span>Blood Group</span><strong>{{ selectedPatient.bloodGroup }}</strong></div>
+                    <div><span>Marital Status</span><strong>{{ selectedPatient.maritalStatus }}</strong></div>
+                    <div><span>Occupation</span><strong>{{ selectedPatient.occupation || '—' }}</strong></div>
+                    <div><span>Govt ID</span><strong>{{ selectedPatient.govtId || '—' }}</strong></div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <div class="section-icon green">
+                            <i class="material-icons">phone</i>
+                        </div>
+                        <div>
+                            <h4>Contact Details</h4>
+                            <span>Patient's phone and communication details</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-details">
+                    <div><span>Mobile Number</span><strong>{{ selectedPatient.mobile }}</strong></div>
+                    <div><span>Alternate Number</span><strong>{{ selectedPatient.alternateMobile || '—' }}</strong></div>
+                    <div><span>Email Address</span><strong>{{ selectedPatient.email }}</strong></div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <div class="section-icon purple">
+                            <i class="material-icons">home</i>
+                        </div>
+                        <div>
+                            <h4>Address Details</h4>
+                            <span>Patient's residential address</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-details">
+                    <div><span>Address Line 1</span><strong>{{ selectedPatient.addressLine1 }}</strong></div>
+                    <div><span>Address Line 2</span><strong>{{ selectedPatient.addressLine2 || '—' }}</strong></div>
+                    <div><span>City</span><strong>{{ selectedPatient.city }}</strong></div>
+                    <div><span>State</span><strong>{{ selectedPatient.state }}</strong></div>
+                    <div><span>Pincode</span><strong>{{ selectedPatient.pincode }}</strong></div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <div class="section-icon orange">
+                            <i class="material-icons">emergency</i>
+                        </div>
+                        <div>
+                            <h4>Emergency Contact</h4>
+                            <span>Contact person in case of emergency</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-details">
+                    <div><span>Contact Name</span><strong>{{ selectedPatient.emergencyName }}</strong></div>
+                    <div><span>Relationship</span><strong>{{ selectedPatient.emergencyRelation }}</strong></div>
+                    <div><span>Contact Number</span><strong>{{ selectedPatient.emergencyMobile }}</strong></div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <div class="section-icon cyan">
+                            <i class="material-icons">health_and_safety</i>
+                        </div>
+                        <div>
+                            <h4>Insurance Details</h4>
+                            <span>Insurance and coverage information</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-details">
+                    <div><span>Has Insurance</span><strong>{{ selectedPatient.hasInsurance ? 'Yes' : 'No' }}</strong></div>
+                    <div><span>Provider</span><strong>{{ selectedPatient.insuranceProvider || '—' }}</strong></div>
+                    <div><span>Policy Number</span><strong>{{ selectedPatient.policyNumber || '—' }}</strong></div>
+                    <div><span>Policy Expiry</span><strong>{{ selectedPatient.policyExpiry || '—' }}</strong></div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <div class="section-icon blue">
+                            <i class="material-icons">notifications</i>
+                        </div>
+                        <div>
+                            <h4>Communication Preferences</h4>
+                            <span>Select how the patient receives notifications</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-details">
+                    <div><span>SMS Notifications</span><strong>{{ selectedPatient.smsNotification ? 'Yes' : 'No' }}</strong></div>
+                    <div><span>WhatsApp Notifications</span><strong>{{ selectedPatient.whatsappNotification ? 'Yes' : 'No' }}</strong></div>
+                    <div><span>Email Notifications</span><strong>{{ selectedPatient.emailNotification ? 'Yes' : 'No' }}</strong></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="drawer-footer">
+            <button type="button" class="drawer-primary" (click)="closeDetails()">
+                Close
+            </button>
+        </div>
+
+    </aside>
+
+</div>

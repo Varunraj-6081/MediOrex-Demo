@@ -1,0 +1,1006 @@
+<div class="patient-registration">
+
+    <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+
+    <div class="registration-header">
+
+        <div class="header-content">
+
+            <div class="header-icon">
+                <i class="material-icons">person_add</i>
+            </div>
+
+            <div>
+                <h2>Patient Registration</h2>
+
+                <p>
+                    Register new patients and maintain their personal,
+                    contact and medical information.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+       REGISTRATION NUMBER
+       ===================================================== -->
+
+    <div class="registration-info">
+
+        <div class="info-item">
+
+            <span class="info-label">
+                Registration Type
+            </span>
+
+            <div class="registration-toggle">
+
+                <button [class.active]="registrationType === 'new'" (click)="selectRegistrationType('new')">
+                    New Patient
+                </button>
+
+                <button [class.active]="registrationType === 'existing'" (click)="selectRegistrationType('existing')">
+                    Existing Patient
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="info-item registration-number">
+
+            <span class="info-label">
+                Patient Registration ID
+            </span>
+
+            <strong>
+                {{ patientId || '—' }}
+            </strong>
+
+        </div>
+
+        <div class="info-item">
+
+            <span class="info-label">
+                Registration Date
+            </span>
+
+            <strong>
+                {{ todayLabel }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+       EXISTING PATIENT LOOKUP BY MOBILE
+       ===================================================== -->
+
+    <div class="mobile-lookup" *ngIf="registrationType === 'existing'">
+
+        <div class="lookup-field">
+
+            <label>
+                Search by Mobile Number <span>*</span>
+            </label>
+
+            <div class="lookup-row">
+
+                <div class="search-input-wrap">
+                    <input type="tel" inputmode="numeric" maxlength="10" [(ngModel)]="searchMobile"
+                        (keypress)="allowNumbersOnly($event)" (input)="keepSearchMobileNumbersOnly($event)"
+                        (keyup.enter)="fetchPatientByMobile()" (focus)="reopenCombo()" (click)="reopenCombo()"
+                        placeholder="Enter 10-digit mobile number" />
+
+                    <ul class="search-suggest" *ngIf="comboOpen && matchedPatients.length > 1">
+                        <li *ngFor="let p of matchedPatients">
+                            <button type="button" (mousedown)="onSelectMatchedPatient(p.patientRegistrationId || '')"
+                                [class.selected]="(p.patientRegistrationId || '') === selectedMatchedId">
+                                {{ getMatchedLabel(p) }}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="lookup-action" (click)="fetchPatientByMobile()"
+                    [disabled]="isSearching || searchMobile.length !== 10">
+                    <i class="material-icons">search</i>
+                    {{ isSearching ? 'Searching...' : 'Search' }}
+                </button>
+
+            </div>
+
+            <small class="lookup-hint">
+                Enter the patient's registered mobile number to auto-fill the details below.
+            </small>
+
+            <span class="lookup-message error" *ngIf="lookupError">{{ lookupError }}</span>
+            <span class="lookup-message success" *ngIf="!lookupError && lookupSuccess">{{ lookupSuccess }}</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+       MAIN GRID
+       ===================================================== -->
+
+    <div class="registration-grid">
+
+
+        <!-- ===================================================
+         LEFT FORM
+         =================================================== -->
+
+        <section class="registration-card">
+
+
+            <!-- ===============================================
+           PERSONAL DETAILS
+           =============================================== -->
+
+            <div class="form-section">
+
+                <div class="section-heading">
+
+                    <div class="section-heading-left">
+
+                        <div class="section-icon blue">
+                            <i class="material-icons">person</i>
+                        </div>
+
+                        <div>
+                            <h3>Personal Details</h3>
+
+                            <span>
+                                Enter patient's basic information
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid three-columns">
+
+                    <!-- First Name -->
+                    <div class="field">
+
+                        <label>
+                            First Name <span>*</span>
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.firstName" [class.error]="submitted && !patient.firstName" placeholder="Enter first name" />
+
+                    </div>
+
+
+                    <!-- Last Name -->
+                    <div class="field">
+
+                        <label>
+                            Last Name <span>*</span>
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.lastName" [class.error]="submitted && !patient.lastName" placeholder="Enter last name" />
+
+                    </div>
+
+
+                    <!-- Date of Birth -->
+                    <div class="field">
+
+                        <label>
+                            Date of Birth
+                        </label>
+
+                        <input type="date" [(ngModel)]="patient.dateOfBirth" />
+
+                    </div>
+
+
+                    <!-- Age -->
+                    <div class="field">
+
+                        <label>
+                            Age <span>*</span>
+                        </label>
+
+                        <input type="number" [(ngModel)]="patient.age" [class.error]="submitted && !patient.age" placeholder="Age" />
+
+                    </div>
+
+
+                    <!-- Gender -->
+                    <div class="field">
+
+                        <label>
+                            Gender <span>*</span>
+                        </label>
+
+                        <select [(ngModel)]="patient.gender" [class.error]="submitted && !patient.gender">
+
+                            <option value="">
+                                Select Gender
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Blood Group -->
+                    <div class="field">
+
+                        <label>
+                            Blood Group
+                        </label>
+
+                        <select [(ngModel)]="patient.bloodGroup">
+
+                            <option value="">
+                                Select Blood Group
+                            </option>
+
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Marital Status -->
+                    <div class="field">
+
+                        <label>
+                            Marital Status
+                        </label>
+
+                        <select [(ngModel)]="patient.maritalStatus">
+
+                            <option value="">
+                                Select Status
+                            </option>
+
+                            <option>Single</option>
+                            <option>Married</option>
+                            <option>Divorced</option>
+                            <option>Widowed</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Occupation -->
+                    <div class="field">
+
+                        <label>
+                            Occupation
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.occupation" placeholder="Enter occupation" />
+
+                    </div>
+
+
+                    <!-- Aadhaar / ID -->
+                    <div class="field">
+
+                        <label>
+                            Government ID
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.govtId" placeholder="Enter ID number" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===============================================
+           CONTACT DETAILS
+           =============================================== -->
+
+            <div class="form-section">
+
+                <div class="section-heading">
+
+                    <div class="section-heading-left">
+
+                        <div class="section-icon green">
+                            <i class="material-icons">phone</i>
+                        </div>
+
+                        <div>
+                            <h3>Contact Details</h3>
+
+                            <span>
+                                Patient's phone and communication details
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid three-columns">
+
+                    <!-- Mobile -->
+                    <div class="field">
+
+                        <label>
+                            Mobile Number <span>*</span>
+                        </label>
+
+                        <input type="tel" inputmode="numeric" maxlength="10" [(ngModel)]="patient.mobile" [class.error]="submitted && !patient.mobile" (keypress)="allowNumbersOnly($event)" (input)="keepNumbersOnly('mobile', $event, 10)" placeholder="+91 XXXXX XXXXX" />
+
+                    </div>
+
+
+                    <!-- Alternate -->
+                    <div class="field">
+
+                        <label>
+                            Alternate Number
+                        </label>
+
+                        <input type="tel" inputmode="numeric" maxlength="10" [(ngModel)]="patient.alternateMobile" (keypress)="allowNumbersOnly($event)" (input)="keepNumbersOnly('alternateMobile', $event, 10)" placeholder="+91 XXXXX XXXXX" />
+
+                    </div>
+
+
+                    <!-- Email -->
+                    <div class="field">
+
+                        <label>
+                            Email Address
+                        </label>
+
+                        <input type="email" [(ngModel)]="patient.email" placeholder="patient@email.com" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===============================================
+           ADDRESS
+           =============================================== -->
+
+            <div class="form-section">
+
+                <div class="section-heading">
+
+                    <div class="section-heading-left">
+
+                        <div class="section-icon purple">
+                            <i class="material-icons">home</i>
+                        </div>
+
+                        <div>
+                            <h3>Address Details</h3>
+
+                            <span>
+                                Patient's residential address
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label>
+                            Address Line 1 <span>*</span>
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.addressLine1" [class.error]="submitted && !patient.addressLine1"
+                            placeholder="House / Flat number, Street" />
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Address Line 2
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.addressLine2" placeholder="Area / Landmark" />
+
+                    </div>
+
+
+                    <div class="address-row">
+
+                        <!-- City -->
+                        <div class="field">
+
+                            <label>
+                                City <span>*</span>
+                            </label>
+
+                            <input type="text" [(ngModel)]="patient.city" [class.error]="submitted && !patient.city" placeholder="City" />
+
+                        </div>
+
+
+                        <!-- State -->
+                        <div class="field">
+
+                            <label>
+                                State <span>*</span>
+                            </label>
+
+                            <select [(ngModel)]="patient.state" [class.error]="submitted && !patient.state">
+
+                                <option value="">
+                                    Select State
+                                </option>
+
+                                <option>Tamil Nadu</option>
+                                <option>Karnataka</option>
+                                <option>Kerala</option>
+                                <option>Andhra Pradesh</option>
+                                <option>Telangana</option>
+                                <option>Maharashtra</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Pincode -->
+                        <div class="field">
+
+                            <label>
+                                Pincode <span>*</span>
+                            </label>
+
+                            <input type="text" inputmode="numeric" maxlength="6" [(ngModel)]="patient.pincode" [class.error]="submitted && !patient.pincode" (keypress)="allowNumbersOnly($event)" (input)="keepNumbersOnly('pincode', $event, 6)" placeholder="600040" />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===============================================
+           EMERGENCY CONTACT
+           =============================================== -->
+
+            <div class="form-section">
+
+                <div class="section-heading">
+
+                    <div class="section-heading-left">
+
+                        <div class="section-icon orange">
+                            <i class="material-icons">emergency</i>
+                        </div>
+
+                        <div>
+                            <h3>Emergency Contact</h3>
+
+                            <span>
+                                Contact person in case of emergency
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid three-columns">
+
+                    <div class="field">
+
+                        <label>
+                            Contact Name
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.emergencyName" placeholder="Enter contact name" />
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Relationship
+                        </label>
+
+                        <select [(ngModel)]="patient.emergencyRelation">
+
+                            <option value="">
+                                Select Relationship
+                            </option>
+
+                            <option>Father</option>
+                            <option>Mother</option>
+                            <option>Spouse</option>
+                            <option>Brother</option>
+                            <option>Sister</option>
+                            <option>Son</option>
+                            <option>Daughter</option>
+                            <option>Guardian</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Contact Number
+                        </label>
+
+                        <input type="tel" inputmode="numeric" maxlength="10" [(ngModel)]="patient.emergencyMobile" (keypress)="allowNumbersOnly($event)" (input)="keepNumbersOnly('emergencyMobile', $event, 10)" placeholder="+91 XXXXX XXXXX" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===============================================
+           INSURANCE
+           =============================================== -->
+
+            <div class="form-section">
+
+                <div class="section-heading">
+
+                    <div class="section-heading-left">
+
+                        <div class="section-icon cyan">
+                            <i class="material-icons">health_and_safety</i>
+                        </div>
+
+                        <div>
+                            <h3>Insurance Details</h3>
+
+                            <span>
+                                Insurance and coverage information
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="insurance-row">
+
+                    <label class="check-option">
+
+                        <input type="checkbox" [(ngModel)]="patient.hasInsurance" />
+
+                        <span></span>
+
+                        Patient has insurance
+
+                    </label>
+
+                </div>
+
+
+                <div class="form-grid three-columns insurance-fields" *ngIf="patient.hasInsurance">
+
+                    <div class="field">
+
+                        <label>
+                            Insurance Provider
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.insuranceProvider" placeholder="Provider name" />
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Policy Number
+                        </label>
+
+                        <input type="text" [(ngModel)]="patient.policyNumber" placeholder="Policy number" />
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Policy Expiry
+                        </label>
+
+                        <input type="date" [(ngModel)]="patient.policyExpiry" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===============================================
+           COMMUNICATION PREFERENCES
+           =============================================== -->
+
+            <div class="form-section communication-section">
+
+                <div class="section-heading">
+
+                    <div class="section-heading-left">
+
+                        <div class="section-icon blue">
+                            <i class="material-icons">notifications</i>
+                        </div>
+
+                        <div>
+                            <h3>Communication Preferences</h3>
+
+                            <span>
+                                Select how the patient receives notifications
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="communication-options">
+
+                    <label class="check-option">
+
+                        <input type="checkbox" [(ngModel)]="patient.smsNotification" />
+
+                        <span></span>
+
+                        SMS Notifications
+
+                    </label>
+
+
+                    <label class="check-option">
+
+                        <input type="checkbox" [(ngModel)]="patient.whatsappNotification" />
+
+                        <span></span>
+
+                        WhatsApp Notifications
+
+                    </label>
+
+
+                    <label class="check-option">
+
+                        <input type="checkbox" [(ngModel)]="patient.emailNotification" />
+
+                        <span></span>
+
+                        Email Notifications
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===============================================
+           BOTTOM ACTION
+           =============================================== -->
+
+            <div class="form-actions">
+
+                <span class="submit-message error" *ngIf="submitError">{{ submitError }}</span>
+                <span class="submit-message success" *ngIf="!submitError && submitSuccess">{{ submitSuccess }}</span>
+
+                <button class="clear-action" (click)="clearForm()">
+                    Clear Form
+                </button>
+
+                <button class="register-action" (click)="registerPatient()" [disabled]="isSubmitting">
+                    <i class="material-icons">check</i>
+                    {{ submitButtonLabel }}
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ===================================================
+         RIGHT SIDE
+         =================================================== -->
+
+        <aside class="registration-side">
+
+
+            <!-- Patient Preview -->
+
+            <div class="preview-card">
+
+                <div class="side-card-header">
+
+                    <div>
+                        <h3>Patient Preview</h3>
+
+                        <span>
+                            Registration summary
+                        </span>
+                    </div>
+
+                    <div class="preview-icon">
+                        <i class="material-icons">person</i>
+                    </div>
+
+                </div>
+
+
+                <div class="patient-preview">
+
+                    <div class="large-avatar">
+                        {{ getInitials() }}
+                    </div>
+
+                    <h3>
+                        {{ getPatientName() }}
+                    </h3>
+
+                    <span class="preview-id">
+                        {{ patientId || '—' }}
+                    </span>
+
+                </div>
+
+
+                <div class="preview-details">
+
+                    <div>
+                        <span>Mobile</span>
+                        <strong>
+                            {{ patient.mobile || '—' }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Age / Gender</span>
+                        <strong>
+                            {{ patient.age || '—' }}
+                            /
+                            {{ patient.gender || '—' }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Blood Group</span>
+                        <strong>
+                            {{ patient.bloodGroup || '—' }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>City</span>
+                        <strong>
+                            {{ patient.city || '—' }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Registration Checklist -->
+
+            <div class="checklist-card">
+
+                <div class="side-card-header">
+
+                    <div>
+                        <h3>Registration Checklist</h3>
+
+                        <span>
+                            Required information
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="checklist">
+
+                    <div class="check-item" [class.completed]="patient.firstName && patient.lastName">
+
+                        <span class="check-circle">
+                            <i class="material-icons">check</i>
+                        </span>
+
+                        <div>
+                            <strong>Personal Details</strong>
+                            <small>
+                                Name and gender
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="check-item" [class.completed]="patient.mobile">
+
+                        <span class="check-circle">
+                            <i class="material-icons">check</i>
+                        </span>
+
+                        <div>
+                            <strong>Contact Details</strong>
+                            <small>
+                                Mobile number
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="check-item" [class.completed]="patient.addressLine1 && patient.city">
+
+                        <span class="check-circle">
+                            <i class="material-icons">check</i>
+                        </span>
+
+                        <div>
+                            <strong>Address</strong>
+                            <small>
+                                Residential address
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="check-item">
+
+                        <span class="check-circle optional">
+                            <i class="material-icons">add</i>
+                        </span>
+
+                        <div>
+                            <strong>Emergency Contact</strong>
+                            <small>
+                                Optional
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="check-item">
+
+                        <span class="check-circle optional">
+                            <i class="material-icons">add</i>
+                        </span>
+
+                        <div>
+                            <strong>Insurance</strong>
+                            <small>
+                                Optional
+                            </small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Help Card -->
+
+            <div class="help-card">
+
+                <div class="help-icon">
+                    <i class="material-icons">help_outline</i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Registration Help
+                    </strong>
+
+                    <span>
+                        Make sure the patient's mobile
+                        number is correct for appointment
+                        notifications.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- =====================================================
+       SUCCESS DIALOG
+       ===================================================== -->
+
+    <div class="dialog-overlay" *ngIf="showSuccessDialog" (click)="closeSuccessDialog()"></div>
+
+    <div class="success-dialog" *ngIf="showSuccessDialog" role="dialog" aria-modal="true"
+        aria-label="Patient registration success">
+
+        <button type="button" class="dialog-close" (click)="closeSuccessDialog()" aria-label="Close">
+            <i class="material-icons">close</i>
+        </button>
+
+        <div class="success-icon">
+            <i class="material-icons">check</i>
+        </div>
+
+        <h3>{{ registrationType === 'existing' ? 'Patient Updated Successfully' : 'Patient Registered Successfully' }}</h3>
+
+        <p>{{ submitSuccess || 'Patient details have been saved.' }}</p>
+
+        <div class="success-id-box">
+            <span>Patient Registration ID</span>
+            <strong>{{ savedPatientId || patientId }}</strong>
+        </div>
+
+        <button type="button" class="success-done" (click)="closeSuccessDialog()">
+            Done
+        </button>
+
+    </div>
+
+</div>

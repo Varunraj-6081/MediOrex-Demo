@@ -1,0 +1,462 @@
+<div class="appointment-list">
+
+                <!-- ==========================================
+                   HEADER
+                   ========================================== -->
+
+                <div class="list-header">
+
+                    <div>
+                        <h2>Appointment List</h2>
+
+                        <p>
+                            View, manage and track all patient appointments.
+                        </p>
+                    </div>
+
+                </div>
+
+
+    <!-- ==========================================
+       SUMMARY CARDS
+       ========================================== -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card" (click)="selectCard('')" [class.active]="!filterStatus">
+
+            <div class="summary-icon blue">
+                <i class="material-icons">event</i>
+            </div>
+
+            <div>
+                <span>Total Appointments</span>
+                <strong>{{ totalAppointments }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card" (click)="selectCard('Consulted')" [class.active]="filterStatus === 'Consulted'">
+
+            <div class="summary-icon green">
+                <i class="material-icons">check_circle</i>
+            </div>
+
+            <div>
+                <span>Consulted</span>
+                <strong>{{ consultedCount }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card" (click)="selectCard('Waiting')" [class.active]="filterStatus === 'Waiting'">
+
+            <div class="summary-icon orange">
+                <i class="material-icons">schedule</i>
+            </div>
+
+            <div>
+                <span>Waiting</span>
+                <strong>{{ waitingCount }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card" (click)="selectCard('Cancelled')" [class.active]="filterStatus === 'Cancelled'">
+
+            <div class="summary-icon red">
+                <i class="material-icons">cancel</i>
+            </div>
+
+            <div>
+                <span>Cancelled</span>
+                <strong>{{ cancelledCount }}</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+       APPOINTMENT TABLE
+       ========================================== -->
+
+    <div class="table-card">
+
+        <div class="table-header">
+
+<div>
+
+                    <h3>Appointments</h3>
+
+                </div>
+
+            <div class="header-actions">
+
+                <button class="reset-btn" (click)="resetFilters()">
+                    ↻ Refresh
+                </button>
+
+                <button class="export-btn">
+                    ↓ Export
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Appointment ID</th>
+
+                        <th>Token</th>
+
+                        <th>Patient</th>
+
+                        <th>Mobile Number</th>
+
+                        <th>Department</th>
+
+                        <th>Doctor</th>
+
+                        <th>Date</th>
+
+                        <th>Time</th>
+
+                        <th>Type</th>
+
+                        <th>Status</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+
+                    <!-- Column Filters -->
+                    <tr class="filter-row">
+
+                        <th>
+                            <input type="text" [(ngModel)]="filterId"
+                                (input)="applyFilters()"
+                                placeholder="Search ID" />
+                        </th>
+
+                        <th>
+                            <input type="text" [(ngModel)]="filterToken"
+                                (input)="applyFilters()"
+                                placeholder="Search token" />
+                        </th>
+
+                        <th>
+                            <input type="text" [(ngModel)]="filterPatient"
+                                (input)="applyFilters()"
+                                placeholder="Search patient" />
+                        </th>
+
+                        <th>
+                            <input type="text" [(ngModel)]="filterMobile"
+                                (input)="applyFilters()"
+                                placeholder="Search mobile" />
+                        </th>
+
+                        <th>
+                            <input type="text" [(ngModel)]="filterDepartment"
+                                (input)="applyFilters()"
+                                placeholder="Search dept" />
+                        </th>
+
+                        <th>
+                            <input type="text" [(ngModel)]="filterDoctor"
+                                (input)="applyFilters()"
+                                placeholder="Search doctor" />
+                        </th>
+
+                        <th>
+                            <input type="text" [(ngModel)]="filterDate"
+                                (input)="applyFilters()"
+                                placeholder="DD Mon YYYY" />
+                        </th>
+
+                        <th>
+                            <input type="text" [(ngModel)]="filterTime"
+                                (input)="applyFilters()"
+                                placeholder="Search time" />
+                        </th>
+
+                        <th>
+                            <select [(ngModel)]="filterType"
+                                (change)="applyFilters()">
+
+                                <option value="">All</option>
+                                <option value="Online">Online</option>
+                                <option value="Walk-in">Walk-in</option>
+
+                            </select>
+                        </th>
+
+                        <th>
+                            <select [(ngModel)]="filterStatus"
+                                (change)="applyFilters()">
+
+                                <option value="">All</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Waiting">Waiting</option>
+                                <option value="Consulted">Consulted</option>
+                                <option value="Cancelled">Cancelled</option>
+
+                            </select>
+                        </th>
+
+                        <th></th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr *ngIf="isLoading">
+
+                        <td colspan="11" class="empty-state">
+
+                            <strong>
+                                Loading appointments...
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+                    <tr *ngFor="let appointment of filteredAppointments; let i = index">
+
+                        <!-- Appointment ID -->
+                        <td class="appointment-id">
+                            {{ appointment.id }}
+                        </td>
+
+
+                        <!-- Token -->
+                        <td>
+
+                            <span class="token-badge">
+                                {{ appointment.token }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- Patient -->
+                        <td>
+
+                            <div class="patient-cell">
+
+                                    <div>
+
+                                        <strong>
+                                            {{ appointment.patient }}
+                                        </strong>
+
+                                        <span>
+                                            {{ appointment.age }} yrs •
+                                            {{ appointment.gender }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                        </td>
+
+
+                        <!-- Mobile -->
+                        <td class="mobile">
+                            {{ appointment.mobile }}
+                        </td>
+
+
+                        <!-- Department -->
+                        <td>
+                            {{ appointment.department }}
+                        </td>
+
+
+                        <!-- Doctor -->
+                        <td>
+                            {{ appointment.doctor }}
+                        </td>
+
+
+                        <!-- Date -->
+                        <td>
+                            {{ appointment.date }}
+                        </td>
+
+
+                        <!-- Time -->
+                        <td class="time">
+                            {{ appointment.time }}
+                        </td>
+
+
+                        <!-- Type -->
+                        <td>
+
+                            <span class="type-badge" [class.online]="appointment.type === 'Online'"
+                                [class.walkin]="appointment.type === 'Walk-in'">
+                                {{ appointment.type }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- Status -->
+                        <td>
+
+                            <span class="status-badge" [ngClass]="getStatusClass(appointment.status)">
+                                {{ appointment.status }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- Actions -->
+                        <td>
+
+                            <div class="actions">
+
+                                <button title="More" class="more-btn" (click)="toggleMenu(i)">
+                                    ⋮
+                                </button>
+
+                                <div class="action-dropdown" *ngIf="openMenuIndex === i">
+                                    <button type="button" (click)="askCancelToken(appointment)"
+                                        [disabled]="!canCancel(appointment)">
+                                        Cancel Token
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- Empty -->
+                    <tr *ngIf="!isLoading && filteredAppointments.length === 0">
+
+                        <td colspan="11" class="empty-state">
+
+                            <div class="empty-icon">
+                                ▣
+                            </div>
+
+                            <strong>
+                                {{ loadError || 'No appointments found' }}
+                            </strong>
+
+                            <span *ngIf="!loadError">
+                                Try changing your search or filters.
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ==========================================
+         PAGINATION
+         ========================================== -->
+
+        <div class="pagination">
+
+            <span>
+                Showing 1–{{ filteredAppointments.length }}
+                of {{ filteredAppointments.length }}
+            </span>
+
+
+            <div class="pagination-buttons">
+
+                <button disabled>
+                    ‹
+                </button>
+
+                <button class="active">
+                    1
+                </button>
+
+                <button>
+                    2
+                </button>
+
+                <button>
+                    3
+                </button>
+
+                <button>
+                    ›
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+     CANCEL TOKEN CONFIRM DIALOG
+     ================================================= -->
+
+    <div class="dialog-overlay" *ngIf="confirmCancelItem" (click)="closeCancelConfirm()"></div>
+
+    <div class="cancel-dialog" *ngIf="confirmCancelItem" role="dialog" aria-modal="true"
+        aria-label="Cancel token confirmation">
+
+        <button type="button" class="dialog-close" (click)="closeCancelConfirm()" aria-label="Close">
+            ✕
+        </button>
+
+        <div class="cancel-icon">
+            ⊘
+        </div>
+
+        <h3>Cancel Token?</h3>
+
+        <p>
+            Do you want to cancel token
+            <strong>{{ confirmCancelItem.token }}</strong>?
+        </p>
+
+        <div class="cancel-actions">
+            <button type="button" class="cancel-no" (click)="closeCancelConfirm()" [disabled]="isCancelling">
+                No
+            </button>
+
+            <button type="button" class="cancel-yes" (click)="confirmCancelToken()" [disabled]="isCancelling">
+                {{ isCancelling ? 'Cancelling...' : 'Yes, Cancel' }}
+            </button>
+        </div>
+
+    </div>
+
+</div>

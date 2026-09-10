@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/shared/api.config.ts"],
+  "sourcesContent": ["export const API_BASE_URL = 'http://localhost:3000/api';\nexport const CLIENT_CODE = 'MEDOREX001';\n"],
+  "mappings": ";AAAO,IAAM,eAAe;AACrB,IAAM,cAAc;",
+  "names": []
+}

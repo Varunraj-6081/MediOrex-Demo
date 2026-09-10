@@ -1,0 +1,118 @@
+<div class="mediorex-home">
+
+
+    <!-- ================= WELCOME ================= -->
+
+    <section class="welcome-section">
+
+        <div class="welcome-text">
+
+            <h1>
+                Welcome to
+                <span>MediOrex</span>
+            </h1>
+
+            <h2>
+                Your Complete Hospital Management Solution
+            </h2>
+
+            <p>
+                Access all modules to manage patients, clinical operations,
+                staff, and more — all in one place.
+            </p>
+
+        </div>
+
+
+        <div class="welcome-banner">
+
+            <div>
+                <strong>
+                    Better Care<br />
+                    Brighter Tomorrow
+                </strong>
+
+                <div class="banner-line"></div>
+            </div>
+
+            <div class="hospital-shape">
+                <i class="material-icons">local_hospital</i>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= MODULE GRID ================= -->
+
+    <section class="module-grid">
+
+        <div class="module-card {{ module.color }}" *ngFor="let module of modules" (click)="openModule(module)">
+
+            <span class="card-lock" *ngIf="module.locked">
+                <i class="material-icons">lock</i>
+            </span>
+
+            <div class="module-icon" [ngClass]="module.color">
+                <i class="material-icons">{{ module.icon }}</i>
+            </div>
+
+            <div class="module-content">
+
+                <h3>
+                    {{ module.name }}
+                </h3>
+
+                <p>
+                    {{ module.description }}
+                </p>
+
+            </div>
+
+            <span class="module-arrow">
+                <i class="material-icons">chevron_right</i>
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FOOTER BANNER ================= -->
+
+    <section class="health-banner">
+
+        <div class="health-logo">
+            <img src="assets/mediorex_logo.png" alt="MediOrEx" class="mediorex-logo-img" />
+        </div>
+
+        <div class="health-text">
+
+            <h3>
+                Together for a Healthier Tomorrow
+            </h3>
+
+            <p>
+                Care Today. Healthier Tomorrow.
+            </p>
+
+        </div>
+
+        <div class="heartbeat">
+            <svg class="heartbeat-svg" viewBox="0 0 150 40" preserveAspectRatio="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M0,20 H10 L12,32 L16,4 L20,34 L22,20 H50 L52,28 L56,12 L60,30 L62,20 H90 L94,34 L98,2 L102,36 L104,20 H130 L132,24 L136,18 L140,26 L142,20 H146"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+            </svg>
+        </div>
+
+        <div class="health-links">
+            Technology&nbsp;&nbsp; | &nbsp;&nbsp;People&nbsp;&nbsp; | &nbsp;&nbsp;Better Care
+        </div>
+
+    </section>
+
+
+</div>
