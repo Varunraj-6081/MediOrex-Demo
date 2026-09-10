@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/settings/settings-layout.component.css"],
-  "sourcesContent": [":host {\n  display: block;\n  width: 100%;\n  height: 100vh;\n  font-family: \"Inter\", \"Segoe UI\", Arial, sans-serif;\n  color: #101b55;\n}\n\n.app-shell {\n  display: flex;\n  width: 100%;\n  height: 100vh;\n  overflow: hidden;\n  background: #f5f9fe;\n}\n\n.main-content {\n  flex: 1;\n  min-width: 0;\n  height: 100vh;\n  overflow: hidden;\n  background: linear-gradient(135deg, #f8fbff 0%, #f3f8fd 100%);\n}\n\n.page-container {\n  height: calc(100vh - 70px);\n  padding: 16px 27px 18px;\n  overflow-y: auto;\n}\n\n.breadcrumb {\n  display: flex;\n  align-items: center;\n  gap: 13px;\n  height: 28px;\n  color: #415b88;\n  font-size: 14px;\n}\n\n.breadcrumb-arrow {\n  color: #8da0bc;\n  font-size: 22px;\n}\n\n@media (max-width: 800px) {\n  .breadcrumb app-date-time {\n    display: none;\n  }\n}\n"],
-  "mappings": ";AAAA;AACE,WAAS;AACT,SAAO;AACP,UAAQ;AACR;AAAA,IAAa,OAAO;AAAA,IAAE,UAAU;AAAA,IAAE,KAAK;AAAA,IAAE;AACzC,SAAO;AACT;AAEA,CAAC;AACC,WAAS;AACT,SAAO;AACP,UAAQ;AACR,YAAU;AACV,cAAY;AACd;AAEA,CAAC;AACC,QAAM;AACN,aAAW;AACX,UAAQ;AACR,YAAU;AACV;AAAA,IAAY;AAAA,MAAgB,MAAhB;AAAA,MAAwB,QAAQ,EAAhC;AAAA,MAAoC,QAAQ;AAC1D;AAEA,CAAC;AACC,UAAQ,KAAK,MAAM,EAAE;AACrB,WAAS,KAAK,KAAK;AACnB,cAAY;AACd;AAEA,CAAC;AACC,WAAS;AACT,eAAa;AACb,OAAK;AACL,UAAQ;AACR,SAAO;AACP,aAAW;AACb;AAEA,CAAC;AACC,SAAO;AACP,aAAW;AACb;AAEA,OAAO,CAAC,SAAS,EAAE;AACjB,GAfD,WAea;AACV,aAAS;AACX;AACF;",
-  "names": []
-}
